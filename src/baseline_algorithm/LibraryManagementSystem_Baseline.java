@@ -234,26 +234,6 @@ class SearchingAlgorithm {
         return results;
     }
     
-    // Binary search for exact match (after sorting)
-    private int binarySearchExact(ArrayList<Book> sortedBooks, String title) {
-        int low = 0;
-        int high = sortedBooks.size() - 1;
-        
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            int comparison = sortedBooks.get(mid).getTitle().compareToIgnoreCase(title);
-            
-            if (comparison == 0) {
-                return mid;
-            } else if (comparison < 0) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-        
-        return -1;
-    }
 }
 
 class LoginFrame extends JFrame implements ActionListener {
