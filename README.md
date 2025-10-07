@@ -23,7 +23,7 @@ This version does not use a SQL database. All data are stored through file handl
 | Franciene Candare | System Analyst |
 | Marc Garata | UI Designer |
 | Emmanuel Tuling | Documentation & Testing Lead |
-| Sam Ugmad | Algorithm Specialist |
+| Sam Ugmad | Algorithm Designer |
 
 ---
 
