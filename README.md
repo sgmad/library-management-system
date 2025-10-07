@@ -70,7 +70,7 @@ The UML diagram below shows how users interact with the system and its main feat
 
 | Diagram Type | Description | Diagram |
 |---------------|--------------|----------|
-| Use Case Diagram | Displays user interactions with system functions like Login, Add Book, Borrow Book, Return Book, and Search Book. | ![UML Use Case Diagram](uml/use_case_diagram.png) |
+| Use Case Diagram | Illustrates how a librarian may interact with system functions such as Login, Add Book, Add Member, Borrow Book, Return Book, Search Book, Sort Books, and Compare Algorithms, including internal processes like updating book status and measuring algorithm performance. | ![UML Use Case Diagram](uml/use_case_diagram.png) |
 
 ---
 
