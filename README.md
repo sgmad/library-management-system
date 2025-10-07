@@ -68,7 +68,7 @@ This version does not use a SQL database. All data are stored through file handl
 
 | Diagram Type | Description | Diagram |
 |---------------|--------------|----------|
-| Use Case Diagram | Illustrates how a librarian may interact with core system functions. | ![UML Use Case Diagram](uml/use_case_diagram.png) |
+| Use Case Diagram | Illustrates how a librarian may interact with core system functions | ![UML Use Case Diagram](uml/use_case_diagram.png) |
 
 ---
 
