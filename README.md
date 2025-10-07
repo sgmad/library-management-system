@@ -70,7 +70,9 @@ Screenshots are stored in the `/screenshots` folder.
 | Panel | Description | Screenshot |
 |--------|--------------|-------------|
 | Login Page | Starting page for authentication | ![Login Page](screenshots/login_page.png) |
-| Dashboard | Main navigation area Displays all stored books | ![Dashboard](screenshots/dashboard.png) |
+| Dashboard | Main navigation area 
+
+Displays all stored books | ![Dashboard](screenshots/dashboard.png) |
 | Add Book | Interface for adding new books | ![Add Book](screenshots/add_book.png) |
 | Borrow Book | Process of borrowing a book | ![Borrow Book](screenshots/borrow_book.png) |
 | Return Book | Marking a book as returned | ![Return Book](screenshots/return_book.png) |
