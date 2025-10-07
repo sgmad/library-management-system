@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
-public class LibraryManagementSystem_Improved {
+public class LibraryManagementSystem {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new LoginFrame());
     }
@@ -84,7 +84,6 @@ class Member {
     }
 }
 
-// Library Data Manager with isSorted flag for improved search
 class LibraryData {
     private static LibraryData instance;
     private ArrayList<Book> books;
@@ -151,7 +150,7 @@ class LibraryData {
         books.add(new Book("B043", "The Road", "Cormac McCarthy", "978-0-307-38789-9"));
         books.add(new Book("B044", "Beloved", "Toni Morrison", "978-1-4000-3341-6"));
         books.add(new Book("B045", "A Clockwork Orange", "Anthony Burgess", "978-0-393-04588-1"));
-        books.add(new Book("B046", "The Handmaid’s Tale", "Margaret Atwood", "978-0-385-49081-7"));
+        books.add(new Book("B046", "The Handmaid's Tale", "Margaret Atwood", "978-0-385-49081-7"));
         books.add(new Book("B047", "Gone with the Wind", "Margaret Mitchell", "978-0-684-80160-5"));
         books.add(new Book("B048", "The Metamorphosis", "Franz Kafka", "978-0-486-27025-3"));
         books.add(new Book("B049", "The Call of the Wild", "Jack London", "978-0-14-132105-9"));
@@ -189,24 +188,24 @@ class LibraryData {
         books.add(new Book("B081", "The Three Musketeers", "Alexandre Dumas", "978-0-14-044926-6")); 
         books.add(new Book("B082", "The Adventures of Sherlock Holmes", "Arthur Conan Doyle", "978-0-14-103432-4"));
         books.add(new Book("B083", "Meditations", "Marcus Aurelius", "978-0-14-044933-4"));
-        books.add(new Book("B084", "Gulliver’s Travels", "Jonathan Swift", "978-0-14-143949-5"));
+        books.add(new Book("B084", "Gulliver's Travels", "Jonathan Swift", "978-0-14-143949-5"));
         books.add(new Book("B085", "The Time Machine", "H.G. Wells", "978-0-14-143997-7"));
         books.add(new Book("B086", "Robinson Crusoe", "Daniel Defoe", "978-0-14-143982-2"));
         books.add(new Book("B087", "Invisible Man", "Ralph Ellison", "978-0-679-60139-5"));
         books.add(new Book("B088", "The Castle", "Franz Kafka", "978-0-14-303989-4"));
         books.add(new Book("B089", "Waiting for Godot", "Samuel Beckett", "978-0-679-73277-8"));
-        books.add(new Book("B090", "A Brief History of Time", "Stephen Hawking", "978-0553380163")); 
-        books.add(new Book("B091", "The Diary of a Young Girl", "Anne Frank", "978-0307594006"));
-        books.add(new Book("B092", "The Art of War", "Sun Tzu", "978-1590302255"));
-        books.add(new Book("B093", "The Prince", "Niccolò Machiavelli", "978-0140449159"));
-        books.add(new Book("B094", "The Wealth of Nations", "Adam Smith", "978-0140432084"));
-        books.add(new Book("B095", "The Republic", "Plato", "978-0140455113"));
-        books.add(new Book("B096", "The Social Contract", "Jean-Jacques Rousseau", "978-0140442014"));
-        books.add(new Book("B097", "Walden", "Henry David Thoreau", "978-0140390313"));
-        books.add(new Book("B098", "The Souls of Black Folk", "W.E.B. Du Bois", "978-0140189986"));
-        books.add(new Book("B099", "Democracy in America", "Alexis de Tocqueville", "978-0140447606"));
-        books.add(new Book("B100", "The Origin of Species", "Charles Darwin", "978-1509827695"));
-        
+        books.add(new Book("B090", "A Brief History of Time", "Stephen Hawking", "978-0-553-38016-3"));
+        books.add(new Book("B091", "The Diary of a Young Girl", "Anne Frank", "978-0-307-59400-6"));
+        books.add(new Book("B092", "The Art of War", "Sun Tzu", "978-1-59030-225-5"));
+        books.add(new Book("B093", "The Prince", "Niccolò Machiavelli", "978-0-14-044915-0"));
+        books.add(new Book("B094", "The Wealth of Nations", "Adam Smith", "978-0-14-043208-4"));
+        books.add(new Book("B095", "The Republic", "Plato", "978-0-14-045511-3"));
+        books.add(new Book("B096", "The Social Contract", "Jean-Jacques Rousseau", "978-0-14-044201-4"));
+        books.add(new Book("B097", "Walden", "Henry David Thoreau", "978-0-14-039031-0"));
+        books.add(new Book("B098", "The Souls of Black Folk", "W.E.B. Du Bois", "978-0-14-018998-8"));
+        books.add(new Book("B099", "Democracy in America", "Alexis de Tocqueville", "978-0-14-044760-6"));
+        books.add(new Book("B100", "The Origin of Species", "Charles Darwin", "978-1-5098-2769-5"));
+
         members.add(new Member("M001", "Mark Garata", "markgarata@umin.com", "639-0101"));
         members.add(new Member("M002", "Franciene Candare", "francienecandare@umin.com", "639-0102"));
         members.add(new Member("M003", "Kiera Aguiadan", "kieraaguiadan@umin.com", "639-0103"));
@@ -250,7 +249,6 @@ class LibraryData {
     }
 }
 
-// BASELINE SORTING: QuickSort with first element pivot (O(n²) worst case)
 class BaselineSortingAlgorithm {
     private long executionTime;
     
@@ -297,7 +295,6 @@ class BaselineSortingAlgorithm {
     }
 }
 
-// IMPROVED SORTING: QuickSort with Median-of-Medians + Insertion Sort
 class ImprovedSortingAlgorithm {
     private long executionTime;
     private static final int INSERTION_SORT_THRESHOLD = 16;
@@ -346,22 +343,19 @@ class ImprovedSortingAlgorithm {
     private int medianOfMedians(ArrayList<Book> books, int low, int high) {
         int n = high - low + 1;
         
-        if (n < 5) {
+        if (n <= 5) {
             return medianOfFive(books, low, high);
         }
         
-        ArrayList<Integer> medians = new ArrayList<>();
+        int numMedians = 0;
         for (int i = low; i <= high; i += 5) {
             int subHigh = Math.min(i + 4, high);
             int medianIdx = medianOfFive(books, i, subHigh);
-            medians.add(medianIdx);
+            swap(books, low + numMedians, medianIdx);
+            numMedians++;
         }
         
-        if (medians.size() == 1) {
-            return medians.get(0);
-        }
-        
-        return medians.get(medians.size() / 2);
+        return medianOfMedians(books, low, low + numMedians - 1);
     }
     
     private int medianOfFive(ArrayList<Book> books, int low, int high) {
@@ -402,7 +396,6 @@ class ImprovedSortingAlgorithm {
     }
 }
 
-// BASELINE SEARCHING: Sorts every time (O(n log n) per search)
 class BaselineSearchingAlgorithm {
     private long executionTime;
     private BaselineSortingAlgorithm sorter;
@@ -430,7 +423,6 @@ class BaselineSearchingAlgorithm {
     }
 }
 
-// IMPROVED SEARCHING: Uses isSorted flag (O(log n) after initial sort)
 class ImprovedSearchingAlgorithm {
     private long executionTime;
     private long sortTime;
@@ -527,7 +519,6 @@ class LoginFrame extends JFrame implements ActionListener {
         String password = new String(passwordField.getPassword());
 
         if (username.equals("User") && password.equals("123")) {
-            JOptionPane.showMessageDialog(this, "Login successful!");
             dispose();
             new MainSystemFrame();
         } else {
@@ -536,95 +527,226 @@ class LoginFrame extends JFrame implements ActionListener {
     }
 }
 
-class MainSystemFrame extends JFrame implements ActionListener {
-    private JMenuItem addBookItem, viewBooksItem, searchBooksItem, sortBooksItem;
-    private JMenuItem addMemberItem, viewMembersItem;
-    private JMenuItem borrowBookItem, returnBookItem;
-    private JMenuItem compareAlgorithmsItem, refreshSortItem;
+class MainSystemFrame extends JFrame {
+    private JTable dataTable;
+    private DefaultTableModel tableModel;
+    private JTextField searchField;
+    private JLabel statusLabel;
+    private JButton toggleViewButton;
+    private JButton addButton;
+    private JButton sortButton;
+    private JButton borrowButton;
+    private JButton returnButton;
+    private JButton compareButton;
+    private JButton refreshButton;
+    private boolean showingBooks = true;
+    private int searchCount = 0;
 
     public MainSystemFrame() {
         setTitle("Library Management System");
-        setSize(900, 600);
+        setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout(5, 5));
 
-        JLabel welcomeLabel = new JLabel("Welcome to the Library Management System!", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        add(welcomeLabel, BorderLayout.CENTER);
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        topPanel.add(new JLabel("Search:"));
+        searchField = new JTextField(25);
+        topPanel.add(searchField);
+        JButton searchButton = new JButton("Search Books");
+        topPanel.add(searchButton);
         
-        JMenuBar menuBar = new JMenuBar();
-
-        JMenu bookMenu = new JMenu("Books");
-        addBookItem = new JMenuItem("Add Book");
-        viewBooksItem = new JMenuItem("View Books");
-        searchBooksItem = new JMenuItem("Search Books");
-        sortBooksItem = new JMenuItem("Sort Books");
-        bookMenu.add(addBookItem);
-        bookMenu.add(viewBooksItem);
-        bookMenu.add(searchBooksItem);
-        bookMenu.add(sortBooksItem);
-
-        JMenu memberMenu = new JMenu("Members");
-        addMemberItem = new JMenuItem("Add Member");
-        viewMembersItem = new JMenuItem("View Members");
-        memberMenu.add(addMemberItem);
-        memberMenu.add(viewMembersItem);
-
-        JMenu borrowMenu = new JMenu("Borrow/Return");
-        borrowBookItem = new JMenuItem("Borrow Book");
-        returnBookItem = new JMenuItem("Return Book");
-        borrowMenu.add(borrowBookItem);
-        borrowMenu.add(returnBookItem);
+        toggleViewButton = new JButton("Show Members");
+        topPanel.add(toggleViewButton);
         
-        JMenu algorithmMenu = new JMenu("Algorithms");
-        compareAlgorithmsItem = new JMenuItem("Compare Baseline vs Improved");
-        refreshSortItem = new JMenuItem("Refresh Sort Cache");
-        algorithmMenu.add(compareAlgorithmsItem);
-        algorithmMenu.add(refreshSortItem);
+        add(topPanel, BorderLayout.NORTH);
 
-        menuBar.add(bookMenu);
-        menuBar.add(memberMenu);
-        menuBar.add(borrowMenu);
-        menuBar.add(algorithmMenu);
-        setJMenuBar(menuBar);
+        String[] bookColumns = {"Book ID", "Title", "Author", "ISBN", "Status", "Borrowed By"};
+        tableModel = new DefaultTableModel(bookColumns, 0);
+        dataTable = new JTable(tableModel);
+        dataTable.setEnabled(false);
+        JScrollPane scrollPane = new JScrollPane(dataTable);
+        add(scrollPane, BorderLayout.CENTER);
 
-        addBookItem.addActionListener(this);
-        viewBooksItem.addActionListener(this);
-        searchBooksItem.addActionListener(this);
-        sortBooksItem.addActionListener(this);
-        addMemberItem.addActionListener(this);
-        viewMembersItem.addActionListener(this);
-        borrowBookItem.addActionListener(this);
-        returnBookItem.addActionListener(this);
-        compareAlgorithmsItem.addActionListener(this);
-        refreshSortItem.addActionListener(this);
+        JPanel bottomPanel = new JPanel(new BorderLayout(5, 5));
+        
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        sortButton = new JButton("Sort Books");
+        addButton = new JButton("Add Book");
+        borrowButton = new JButton("Borrow Book");
+        returnButton = new JButton("Return Book");
+        buttonPanel.add(sortButton);
+        buttonPanel.add(addButton);
+        buttonPanel.add(borrowButton);
+        buttonPanel.add(returnButton);
+        
+        JPanel algorithmPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+        compareButton = new JButton("Compare Algorithms");
+        refreshButton = new JButton("Refresh Cache");
+        algorithmPanel.add(compareButton);
+        algorithmPanel.add(refreshButton);
+        
+        JPanel combinedButtonPanel = new JPanel(new BorderLayout());
+        combinedButtonPanel.add(buttonPanel, BorderLayout.WEST);
+        combinedButtonPanel.add(algorithmPanel, BorderLayout.EAST);
+        
+        statusLabel = new JLabel("Status: Ready | Collection is UNSORTED");
+        statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        
+        bottomPanel.add(combinedButtonPanel, BorderLayout.NORTH);
+        bottomPanel.add(statusLabel, BorderLayout.SOUTH);
+        add(bottomPanel, BorderLayout.SOUTH);
 
+        searchButton.addActionListener(e -> performSearch());
+        searchField.addActionListener(e -> performSearch());
+        toggleViewButton.addActionListener(e -> toggleView());
+        sortButton.addActionListener(e -> sortData());
+        addButton.addActionListener(e -> addData());
+        borrowButton.addActionListener(e -> new BorrowBookDialog(this));
+        returnButton.addActionListener(e -> new ReturnBookDialog(this));
+        compareButton.addActionListener(e -> new CompareAlgorithmsDialog(this));
+        refreshButton.addActionListener(e -> {
+            LibraryData.getInstance().markUnsorted();
+            statusLabel.setText("Status: Cache cleared | Collection is UNSORTED");
+        });
+
+        loadBooksData();
         setVisible(true);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == addBookItem) {
+    private void loadBooksData() {
+        tableModel.setRowCount(0);
+        String[] columns = {"Book ID", "Title", "Author", "ISBN", "Status", "Borrowed By"};
+        tableModel.setColumnIdentifiers(columns);
+        
+        LibraryData data = LibraryData.getInstance();
+        for (Book book : data.getBooks()) {
+            tableModel.addRow(new Object[]{
+                book.getBookId(), book.getTitle(), book.getAuthor(), book.getIsbn(),
+                book.isAvailable() ? "Available" : "Borrowed",
+                book.isAvailable() ? "-" : book.getBorrowedBy()
+            });
+        }
+    }
+
+    private void loadMembersData() {
+        tableModel.setRowCount(0);
+        String[] columns = {"Member ID", "Name", "Email", "Phone", "Books Borrowed"};
+        tableModel.setColumnIdentifiers(columns);
+        
+        LibraryData data = LibraryData.getInstance();
+        for (Member member : data.getMembers()) {
+            tableModel.addRow(new Object[]{
+                member.getMemberId(), member.getName(), member.getEmail(),
+                member.getPhone(), member.getBorrowedBooks().size()
+            });
+        }
+    }
+
+    private void toggleView() {
+        showingBooks = !showingBooks;
+        if (showingBooks) {
+            loadBooksData();
+            toggleViewButton.setText("Show Members");
+            addButton.setText("Add Book");
+            sortButton.setText("Sort Books");
+            searchField.setEnabled(true);
+        } else {
+            loadMembersData();
+            toggleViewButton.setText("Show Books");
+            addButton.setText("Add Member");
+            sortButton.setText("Sort Members");
+            searchField.setEnabled(false);
+        }
+        searchCount = 0;
+    }
+
+    private void performSearch() {
+        if (!showingBooks) return;
+        
+        String searchTerm = searchField.getText().trim();
+        if (searchTerm.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Enter a search term.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        searchCount++;
+        LibraryData data = LibraryData.getInstance();
+        ImprovedSearchingAlgorithm searcher = new ImprovedSearchingAlgorithm();
+        boolean wasSortedBefore = data.isSorted();
+        
+        ArrayList<Book> results = searcher.searchBooksByTitle(data.getBooks(), searchTerm);
+        
+        tableModel.setRowCount(0);
+        for (Book book : results) {
+            tableModel.addRow(new Object[]{
+                book.getBookId(), book.getTitle(), book.getAuthor(), book.getIsbn(),
+                book.isAvailable() ? "Available" : "Borrowed",
+                book.isAvailable() ? "-" : book.getBorrowedBy()
+            });
+        }
+        
+        long searchTime = searcher.getExecutionTime();
+        String status = String.format("Search #%d | Found %d results | Time: %d ns (%.2f μs) | ", 
+                                     searchCount, results.size(), searchTime, searchTime / 1000.0);
+        
+        if (!wasSortedBefore) {
+            status += String.format("Initial sort: %d ns | Collection SORTED (cached)", searcher.getSortTime());
+        } else {
+            status += "Collection SORTED (cached) | O(log n) complexity";
+        }
+        
+        statusLabel.setText(status);
+    }
+
+    private void sortData() {
+        if (showingBooks) {
+            LibraryData data = LibraryData.getInstance();
+            ImprovedSortingAlgorithm sorter = new ImprovedSortingAlgorithm();
+            ArrayList<Book> sortedBooks = sorter.sortBooks(data.getBooks());
+            
+            tableModel.setRowCount(0);
+            for (Book book : sortedBooks) {
+                tableModel.addRow(new Object[]{
+                    book.getBookId(), book.getTitle(), book.getAuthor(), book.getIsbn(),
+                    book.isAvailable() ? "Available" : "Borrowed",
+                    book.isAvailable() ? "-" : book.getBorrowedBy()
+                });
+            }
+            
+            long timeNano = sorter.getExecutionTime();
+            statusLabel.setText(String.format("Books sorted alphabetically | Algorithm: QuickSort (Median-of-Medians) | Time: %d ns (%.2f μs) | O(n log n) worst case", 
+                                             timeNano, timeNano / 1000.0));
+        } else {
+            LibraryData data = LibraryData.getInstance();
+            ArrayList<Member> members = data.getMembers();
+            members.sort((m1, m2) -> m1.getName().compareToIgnoreCase(m2.getName()));
+            
+            tableModel.setRowCount(0);
+            for (Member member : members) {
+                tableModel.addRow(new Object[]{
+                    member.getMemberId(), member.getName(), member.getEmail(),
+                    member.getPhone(), member.getBorrowedBooks().size()
+                });
+            }
+            
+            statusLabel.setText("Members sorted alphabetically by name");
+        }
+    }
+
+    private void addData() {
+        if (showingBooks) {
             new AddBookDialog(this);
-        } else if (e.getSource() == viewBooksItem) {
-            new ViewBooksDialog(this);
-        } else if (e.getSource() == searchBooksItem) {
-            new ImprovedSearchBooksDialog(this);
-        } else if (e.getSource() == sortBooksItem) {
-            new ImprovedSortBooksDialog(this);
-        } else if (e.getSource() == addMemberItem) {
+        } else {
             new AddMemberDialog(this);
-        } else if (e.getSource() == viewMembersItem) {
-            new ViewMembersDialog(this);
-        } else if (e.getSource() == borrowBookItem) {
-            new BorrowBookDialog(this);
-        } else if (e.getSource() == returnBookItem) {
-            new ReturnBookDialog(this);
-        } else if (e.getSource() == compareAlgorithmsItem) {
-            new CompareAlgorithmsDialog(this);
-        } else if (e.getSource() == refreshSortItem) {
-            LibraryData.getInstance().markUnsorted();
-            JOptionPane.showMessageDialog(this, "Sort cache cleared. Next search will re-sort.");
+        }
+    }
+    
+    public void refreshDisplay() {
+        if (showingBooks) {
+            loadBooksData();
+        } else {
+            loadMembersData();
         }
     }
 }
@@ -648,17 +770,17 @@ class CompareAlgorithmsDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
         
         StringBuilder sb = new StringBuilder();
-        sb.append("=".repeat(60)).append("\n");
+        sb.append("=".repeat(62)).append("\n");
         sb.append("ALGORITHM PERFORMANCE COMPARISON\n");
-        sb.append("=".repeat(60)).append("\n\n");
+        sb.append("=".repeat(62)).append("\n\n");
         
         LibraryData data = LibraryData.getInstance();
         ArrayList<Book> books = data.getBooks();
         sb.append("Dataset Size: ").append(books.size()).append(" books\n\n");
         
-        sb.append("-".repeat(60)).append("\n");
+        sb.append("-".repeat(62)).append("\n");
         sb.append("SORTING ALGORITHM COMPARISON\n");
-        sb.append("-".repeat(60)).append("\n\n");
+        sb.append("-".repeat(62)).append("\n\n");
         
         BaselineSortingAlgorithm baselineSorter = new BaselineSortingAlgorithm();
         baselineSorter.sortBooks(books);
@@ -674,14 +796,23 @@ class CompareAlgorithmsDialog extends JDialog {
         long improvedSortTime = improvedSorter.getExecutionTime();
         
         sb.append("2. IMPROVED QuickSort (Median-of-Medians + Insertion Sort):\n");
-        sb.append("   Time Complexity: O(n log n) worst case\n");
+        sb.append("   Time Complexity: O(n log n) worst case (guaranteed)\n");
         sb.append("   Execution Time: ").append(improvedSortTime).append(" ns (")
           .append(String.format("%.2f", improvedSortTime / 1000.0)).append(" μs)\n\n");
         
+        double sortSpeedup = (double) baselineSortTime / improvedSortTime;
+        sb.append("Sorting Comparison: ").append(String.format("%.2fx", sortSpeedup));
+        if (sortSpeedup > 1) {
+            sb.append(" (Improved is faster)\n\n");
+        } else {
+            sb.append(" (Baseline faster on this dataset)\n\n");
+        }
         
-        sb.append("-".repeat(60)).append("\n");
+        sb.append("Note: Improved algorithm guarantees O(n log n) in worst case.\n\n");
+        
+        sb.append("-".repeat(62)).append("\n");
         sb.append("SEARCHING ALGORITHM COMPARISON\n");
-        sb.append("-".repeat(60)).append("\n\n");
+        sb.append("-".repeat(62)).append("\n\n");
         
         String searchTerm = "the";
         
@@ -742,7 +873,7 @@ class CompareAlgorithmsDialog extends JDialog {
         sb.append("-".repeat(60)).append("\n");
         sb.append("Baseline Total: ").append(baselineTotal).append(" ns\n");
         sb.append("Improved Total: ").append(improvedTotal).append(" ns\n");
-        sb.append("Total Speedup: ").append(String.format("%.2fx", (double) baselineTotal / improvedTotal)).append("\n\n");
+        sb.append("Total Speedup: ").append(String.format("%.2fx", (double) baselineTotal / improvedTotal)).append("\n");
         
         resultsArea.setText(sb.toString());
         resultsArea.setCaretPosition(0);
@@ -752,9 +883,11 @@ class CompareAlgorithmsDialog extends JDialog {
 
 class AddBookDialog extends JDialog {
     private JTextField bookIdField, titleField, authorField, isbnField;
+    private MainSystemFrame parent;
     
-    public AddBookDialog(JFrame parent) {
+    public AddBookDialog(MainSystemFrame parent) {
         super(parent, "Add Book", true);
+        this.parent = parent;
         setSize(400, 300);
         setLocationRelativeTo(parent);
         
@@ -817,7 +950,8 @@ class AddBookDialog extends JDialog {
             }
             
             data.addBook(new Book(bookId, title, author, isbn));
-            JOptionPane.showMessageDialog(this, "Book added.\nSort cache invalidated.");
+            JOptionPane.showMessageDialog(this, "Book added. Sort cache invalidated.");
+            this.parent.refreshDisplay();
             dispose();
         });
         
@@ -826,190 +960,13 @@ class AddBookDialog extends JDialog {
     }
 }
 
-class ViewBooksDialog extends JDialog {
-    public ViewBooksDialog(JFrame parent) {
-        super(parent, "View Books", true);
-        setSize(800, 500);
-        setLocationRelativeTo(parent);
-        
-        LibraryData data = LibraryData.getInstance();
-        String[] columns = {"Book ID", "Title", "Author", "ISBN", "Status", "Borrowed By"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        
-        for (Book book : data.getBooks()) {
-            model.addRow(new Object[]{
-                book.getBookId(), book.getTitle(), book.getAuthor(), book.getIsbn(),
-                book.isAvailable() ? "Available" : "Borrowed",
-                book.isAvailable() ? "-" : book.getBorrowedBy()
-            });
-        }
-        
-        JTable table = new JTable(model);
-        table.setEnabled(false);
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        
-        JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> dispose());
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(closeButton);
-        add(buttonPanel, BorderLayout.SOUTH);
-        
-        setVisible(true);
-    }
-}
-
-class ImprovedSearchBooksDialog extends JDialog {
-    private JTextField searchField;
-    private JTextArea resultsArea;
-    private JLabel statusLabel;
-    private int searchCount = 0;
-    
-    public ImprovedSearchBooksDialog(JFrame parent) {
-        super(parent, "Search Books", true);
-        setSize(700, 550);
-        setLocationRelativeTo(parent);
-        
-        JPanel topPanel = new JPanel(new FlowLayout());
-        topPanel.add(new JLabel("Search by Title:"));
-        searchField = new JTextField(20);
-        JButton searchButton = new JButton("Search");
-        topPanel.add(searchField);
-        topPanel.add(searchButton);
-        add(topPanel, BorderLayout.NORTH);
-        
-        resultsArea = new JTextArea();
-        resultsArea.setEditable(false);
-        resultsArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        add(new JScrollPane(resultsArea), BorderLayout.CENTER);
-        
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        statusLabel = new JLabel("Status: Ready | Collection is " + 
-                                (LibraryData.getInstance().isSorted() ? "SORTED" : "UNSORTED"));
-        statusLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        bottomPanel.add(statusLabel, BorderLayout.NORTH);
-        
-        JLabel infoLabel = new JLabel("<html>Algorithm: Binary Search with isSorted flag<br>" +
-                                    "Time Complexity: O(n log n) first search, O(log n) subsequent</html>");
-        infoLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        bottomPanel.add(infoLabel, BorderLayout.CENTER);
-        
-        JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> dispose());
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(closeButton);
-        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
-        add(bottomPanel, BorderLayout.SOUTH);
-        
-        searchButton.addActionListener(e -> performSearch());
-        searchField.addActionListener(e -> performSearch());
-        setVisible(true);
-    }
-    
-    private void performSearch() {
-        String searchTerm = searchField.getText().trim();
-        if (searchTerm.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Enter a search term.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        searchCount++;
-        LibraryData data = LibraryData.getInstance();
-        ImprovedSearchingAlgorithm searcher = new ImprovedSearchingAlgorithm();
-        boolean wasSortedBefore = data.isSorted();
-        
-        ArrayList<Book> results = searcher.searchBooksByTitle(data.getBooks(), searchTerm);
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("Search #").append(searchCount).append(" - Results for: \"").append(searchTerm).append("\"\n");
-        sb.append("=".repeat(51)).append("\n\n");
-        
-        if (!wasSortedBefore) {
-            sb.append("⚠ Collection UNSORTED - performed initial sort\n");
-            sb.append("   Subsequent searches will be much faster (cached)\n");
-            sb.append("   Sort Time: ").append(searcher.getSortTime()).append(" ns (")
-              .append(String.format("%.2f", searcher.getSortTime() / 1000.0)).append(" μs)\n\n");
-        } else {
-            sb.append("✓ Collection SORTED - used cache\n\n");
-        }
-        
-        if (results.isEmpty()) {
-            sb.append("No books found.\n");
-        } else {
-            sb.append("Found ").append(results.size()).append(" book(s):\n\n");
-            for (Book book : results) {
-                sb.append("  • ").append(book.getTitle()).append(" by ").append(book.getAuthor()).append("\n");
-                sb.append("    ID: ").append(book.getBookId()).append(", Status: ")
-                  .append(book.isAvailable() ? "Available" : "Borrowed").append("\n\n");
-            }
-        }
-        
-        long searchTime = searcher.getExecutionTime();
-        sb.append("-".repeat(51)).append("\n");
-        sb.append("Total Time: ").append(searchTime).append(" ns (")
-          .append(String.format("%.2f", searchTime / 1000.0)).append(" μs)\n");
-        
-        if (!wasSortedBefore) {
-            long pureSearch = searchTime - searcher.getSortTime();
-            sb.append("Pure Search: ").append(pureSearch).append(" ns\n");
-        }
-        
-        resultsArea.setText(sb.toString());
-        statusLabel.setText("Status: Search #" + searchCount + " | Collection is SORTED (cached)");
-    }
-}
-
-class ImprovedSortBooksDialog extends JDialog {
-    public ImprovedSortBooksDialog(JFrame parent) {
-        super(parent, "Sort Books", true);
-        setSize(850, 550);
-        setLocationRelativeTo(parent);
-        
-        LibraryData data = LibraryData.getInstance();
-        ImprovedSortingAlgorithm sorter = new ImprovedSortingAlgorithm();
-        ArrayList<Book> sortedBooks = sorter.sortBooks(data.getBooks());
-        
-        String[] columns = {"Book ID", "Title", "Author", "ISBN", "Status"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        
-        for (Book book : sortedBooks) {
-            model.addRow(new Object[]{
-                book.getBookId(), book.getTitle(), book.getAuthor(), book.getIsbn(),
-                book.isAvailable() ? "Available" : "Borrowed"
-            });
-        }
-        
-        JTable table = new JTable(model);
-        table.setEnabled(false);
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        long timeNano = sorter.getExecutionTime();
-        
-        JLabel infoLabel = new JLabel(String.format(
-            "<html><b>Books sorted alphabetically</b><br><br>" +
-            "<b>Algorithm:</b> QuickSort with Median-of-Medians + Insertion Sort<br>" +
-            "<b>Time Complexity:</b> O(n log n) worst case<br>" +
-            "<b>Execution Time:</b> %.2f μs (%d ns)<br><br>", 
-            timeNano / 1000.0, timeNano));
-        infoLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        bottomPanel.add(infoLabel, BorderLayout.CENTER);
-        
-        JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> dispose());
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(closeButton);
-        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
-        add(bottomPanel, BorderLayout.SOUTH);
-        
-        setVisible(true);
-    }
-}
-
 class AddMemberDialog extends JDialog {
     private JTextField memberIdField, nameField, emailField, phoneField;
+    private MainSystemFrame parent;
     
-    public AddMemberDialog(JFrame parent) {
+    public AddMemberDialog(MainSystemFrame parent) {
         super(parent, "Add Member", true);
+        this.parent = parent;
         setSize(400, 300);
         setLocationRelativeTo(parent);
         
@@ -1073,6 +1030,7 @@ class AddMemberDialog extends JDialog {
             
             data.addMember(new Member(memberId, name, email, phone));
             JOptionPane.showMessageDialog(this, "Member added successfully.");
+            this.parent.refreshDisplay();
             dispose();
         });
         
@@ -1081,40 +1039,8 @@ class AddMemberDialog extends JDialog {
     }
 }
 
-class ViewMembersDialog extends JDialog {
-    public ViewMembersDialog(JFrame parent) {
-        super(parent, "View Members", true);
-        setSize(700, 400);
-        setLocationRelativeTo(parent);
-        
-        LibraryData data = LibraryData.getInstance();
-        String[] columns = {"Member ID", "Name", "Email", "Phone", "Books Borrowed"};
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
-        
-        for (Member member : data.getMembers()) {
-            model.addRow(new Object[]{
-                member.getMemberId(), member.getName(), member.getEmail(),
-                member.getPhone(), member.getBorrowedBooks().size()
-            });
-        }
-        
-        JTable table = new JTable(model);
-        table.setEnabled(false);
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        
-        JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> dispose());
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(closeButton);
-        add(buttonPanel, BorderLayout.SOUTH);
-        
-        setVisible(true);
-    }
-}
-
 class BorrowBookDialog extends JDialog {
     private JTextField memberIdField, bookIdField;
-    private JButton borrowButton, cancelButton;
     
     public BorrowBookDialog(JFrame parent) {
         super(parent, "Borrow Book", true);
@@ -1127,85 +1053,75 @@ class BorrowBookDialog extends JDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        // Member ID
         gbc.gridx = 0; gbc.gridy = 0;
         panel.add(new JLabel("Member ID:"), gbc);
         memberIdField = new JTextField(15);
         gbc.gridx = 1;
         panel.add(memberIdField, gbc);
         
-        // Book ID
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(new JLabel("Book ID:"), gbc);
         bookIdField = new JTextField(15);
         gbc.gridx = 1;
         panel.add(bookIdField, gbc);
         
-        // Buttons
         JPanel buttonPanel = new JPanel();
-        borrowButton = new JButton("Borrow");
-        cancelButton = new JButton("Cancel");
+        JButton borrowButton = new JButton("Borrow");
+        JButton cancelButton = new JButton("Cancel");
         buttonPanel.add(borrowButton);
         buttonPanel.add(cancelButton);
         
         gbc.gridx = 0; gbc.gridy = 2;
         gbc.gridwidth = 2;
         panel.add(buttonPanel, gbc);
-        
         add(panel);
         
-        borrowButton.addActionListener(e -> borrowBook());
+        borrowButton.addActionListener(e -> {
+            String memberId = memberIdField.getText().trim();
+            String bookId = bookIdField.getText().trim();
+            
+            if (memberId.isEmpty() || bookId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields required.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            LibraryData data = LibraryData.getInstance();
+            Member member = data.findMemberById(memberId);
+            Book book = data.findBookById(bookId);
+            
+            if (member == null) {
+                JOptionPane.showMessageDialog(this, "Member not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (book == null) {
+                JOptionPane.showMessageDialog(this, "Book not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (!book.isAvailable()) {
+                JOptionPane.showMessageDialog(this, "Book is already borrowed.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            book.setAvailable(false);
+            book.setBorrowedBy(memberId);
+            book.setBorrowDate(new Date());
+            member.borrowBook(bookId);
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            JOptionPane.showMessageDialog(this, String.format("Book borrowed successfully.\n\nBook: %s\nMember: %s\nDate: %s",
+                                       book.getTitle(), member.getName(), sdf.format(book.getBorrowDate())));
+            dispose();
+        });
+        
         cancelButton.addActionListener(e -> dispose());
-        
         setVisible(true);
-    }
-    
-    private void borrowBook() {
-        String memberId = memberIdField.getText().trim();
-        String bookId = bookIdField.getText().trim();
-        
-        if (memberId.isEmpty() || bookId.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "All fields are required.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        LibraryData data = LibraryData.getInstance();
-        Member member = data.findMemberById(memberId);
-        Book book = data.findBookById(bookId);
-        
-        if (member == null) {
-            JOptionPane.showMessageDialog(this, "Member not found.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (book == null) {
-            JOptionPane.showMessageDialog(this, "Book not found.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (!book.isAvailable()) {
-            JOptionPane.showMessageDialog(this, "Book is already borrowed.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // Borrow the book
-        book.setAvailable(false);
-        book.setBorrowedBy(memberId);
-        book.setBorrowDate(new Date());
-        member.borrowBook(bookId);
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String message = String.format("Book borrowed successfully.\n\nBook: %s\nMember: %s\nDate: %s",
-                                       book.getTitle(), member.getName(), sdf.format(book.getBorrowDate()));
-        
-        JOptionPane.showMessageDialog(this, message);
-        dispose();
     }
 }
 
 class ReturnBookDialog extends JDialog {
     private JTextField bookIdField;
-    private JButton returnButton, cancelButton;
     
     public ReturnBookDialog(JFrame parent) {
         super(parent, "Return Book", true);
@@ -1218,75 +1134,66 @@ class ReturnBookDialog extends JDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        // Book ID
         gbc.gridx = 0; gbc.gridy = 0;
         panel.add(new JLabel("Book ID:"), gbc);
         bookIdField = new JTextField(15);
         gbc.gridx = 1;
         panel.add(bookIdField, gbc);
         
-        // Buttons
         JPanel buttonPanel = new JPanel();
-        returnButton = new JButton("Return");
-        cancelButton = new JButton("Cancel");
+        JButton returnButton = new JButton("Return");
+        JButton cancelButton = new JButton("Cancel");
         buttonPanel.add(returnButton);
         buttonPanel.add(cancelButton);
         
         gbc.gridx = 0; gbc.gridy = 1;
         gbc.gridwidth = 2;
         panel.add(buttonPanel, gbc);
-        
         add(panel);
         
-        returnButton.addActionListener(e -> returnBook());
-        cancelButton.addActionListener(e -> dispose());
-        
-        setVisible(true);
-    }
-    
-    private void returnBook() {
-        String bookId = bookIdField.getText().trim();
-        
-        if (bookId.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Book ID is required.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        LibraryData data = LibraryData.getInstance();
-        Book book = data.findBookById(bookId);
-        
-        if (book == null) {
-            JOptionPane.showMessageDialog(this, "Book not found.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (book.isAvailable()) {
-            JOptionPane.showMessageDialog(this, "Book is not currently borrowed.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        // Find the member who borrowed the book
-        String memberId = book.getBorrowedBy();
-        Member member = data.findMemberById(memberId);
-        
-        // Return the book
-        book.setAvailable(true);
-        book.setBorrowedBy(null);
-        Date borrowDate = book.getBorrowDate();
-        book.setBorrowDate(null);
-        
-        if (member != null) {
-            member.returnBook(bookId);
-        }
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String message = String.format("Book returned successfully.\n\nBook: %s\nBorrowed by: %s\nBorrow Date: %s\nReturn Date: %s",
+        returnButton.addActionListener(e -> {
+            String bookId = bookIdField.getText().trim();
+            
+            if (bookId.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Book ID is required.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            LibraryData data = LibraryData.getInstance();
+            Book book = data.findBookById(bookId);
+            
+            if (book == null) {
+                JOptionPane.showMessageDialog(this, "Book not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (book.isAvailable()) {
+                JOptionPane.showMessageDialog(this, "Book is not currently borrowed.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            String memberId = book.getBorrowedBy();
+            Member member = data.findMemberById(memberId);
+            
+            book.setAvailable(true);
+            book.setBorrowedBy(null);
+            Date borrowDate = book.getBorrowDate();
+            book.setBorrowDate(null);
+            
+            if (member != null) {
+                member.returnBook(bookId);
+            }
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            JOptionPane.showMessageDialog(this, String.format("Book returned successfully.\n\nBook: %s\nBorrowed by: %s\nBorrow Date: %s\nReturn Date: %s",
                                        book.getTitle(), 
                                        member != null ? member.getName() : memberId,
                                        borrowDate != null ? sdf.format(borrowDate) : "Unknown",
-                                       sdf.format(new Date()));
+                                       sdf.format(new Date())));
+            dispose();
+        });
         
-        JOptionPane.showMessageDialog(this, message);
-        dispose();
+        cancelButton.addActionListener(e -> dispose());
+        setVisible(true);
     }
 }
