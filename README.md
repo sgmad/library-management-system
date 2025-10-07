@@ -64,6 +64,16 @@ This version does not use a SQL database. All data are stored through file handl
 
 ---
 
+## 🧩 UML Diagram
+
+The UML diagram below shows how users interact with the system and its main features.
+
+| Diagram Type | Description | Diagram |
+|---------------|--------------|----------|
+| Use Case Diagram | Displays user interactions with system functions like Login, Add Book, Borrow Book, Return Book, and Search Book. | ![UML Use Case Diagram](uml/use_case_diagram.png) |
+
+---
+
 ## 🖼️ Screenshots
 Screenshots are stored in the `/screenshots` folder.
 
