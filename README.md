@@ -66,11 +66,9 @@ This version does not use a SQL database. All data are stored through file handl
 
 ## 🧩 UML Diagram
 
-The UML diagram below shows how users interact with the system and its main features.
-
 | Diagram Type | Description | Diagram |
 |---------------|--------------|----------|
-| Use Case Diagram | Illustrates how a librarian may interact with system functions such as Login, Add Book, Add Member, Borrow Book, Return Book, Search Book, Sort Books, and Compare Algorithms, including internal processes like updating book status and measuring algorithm performance. | ![UML Use Case Diagram](uml/use_case_diagram.png) |
+| Use Case Diagram | Illustrates how a librarian may interact with core system functions. | ![UML Use Case Diagram](uml/use_case_diagram.png) |
 
 ---
 
