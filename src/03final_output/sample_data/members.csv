@@ -1,0 +1,5 @@
+MemberID,Name,Email,Phone,BorrowedBooks,TotalBorrowCount
+M004,Emmanuel Tuling,emmanueltuling@umin.com,639-0104,,0
+M002,Franciene Candare,francienecandare@umin.com,639-0102,,0
+M003,Kiera Aguiadan,kieraaguiadan@umin.com,639-0103,,0
+M001,Mark Garata,markgarata@umin.com,639-0101,B003,0
