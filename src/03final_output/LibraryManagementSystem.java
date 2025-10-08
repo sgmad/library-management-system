@@ -926,8 +926,9 @@ class CompareAlgorithmsDialog extends JDialog {
         improvedSearcher = new ImprovedSearchingAlgorithm();
         long baselineTotal = 0;
         long improvedTotal = 0;
+        int numSearches = 20;
         
-        for (int i = 0; i < runs; i++) {
+        for (int i = 0; i < numSearches; i++) {
             data.markUnsorted();
             baselineSearcher.searchBooksByTitle(new ArrayList<>(books), searchTerm);
             baselineTotal += baselineSearcher.getExecutionTime();
@@ -938,7 +939,7 @@ class CompareAlgorithmsDialog extends JDialog {
         }
         
         sb.append("-".repeat(60)).append("\n");
-        sb.append("AMORTIZED ANALYSIS (").append(runs).append(" searches):\n");
+        sb.append("AMORTIZED ANALYSIS (").append(numSearches).append(" searches):\n");
         sb.append("-".repeat(60)).append("\n");
         sb.append("Baseline Total: ").append(baselineTotal).append(" ns\n");
         sb.append("Improved Total: ").append(improvedTotal).append(" ns\n");
