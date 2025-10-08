@@ -12,7 +12,7 @@ The Library Management System allows users to:
 - Sort and search through the catalog using different algorithms.
 - Compare the performance between  base and improved algorithms.
 
-This version does not use a SQL database. All data are stored through file handling.
+This version does not use a SQL database. All data are stored in .csv files in '/sample_data'.
 
 ---
 
