@@ -766,9 +766,7 @@ class MainSystemFrame extends JFrame {
             LibraryData data = LibraryData.getInstance();
             ImprovedSortingAlgorithm sorter = new ImprovedSortingAlgorithm();
             ArrayList<Book> sortedBooks = sorter.sortBooks(data.getBooks());
-
-            data.getBooks().clear();
-            data.getBooks().addAll(sortedBooks);
+            
             data.setIsSorted(true);
 
             tableModel.setRowCount(0);
