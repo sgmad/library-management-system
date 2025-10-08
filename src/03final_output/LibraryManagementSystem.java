@@ -261,7 +261,15 @@ class DataPersistence {
                             }
                         }
                     }
-                    member.setTotalBorrowCount(Integer.parseInt(parts[5]));
+                    int totalBorrow = 0;
+                    try {
+                        if (parts[5] != null && !parts[5].trim().isEmpty()) {
+                            totalBorrow = Integer.parseInt(parts[5].trim());
+                        }
+                    } catch (NumberFormatException ex) {
+                        totalBorrow = 0; 
+                    }
+                    member.setTotalBorrowCount(totalBorrow);
                     members.add(member);
                 }
             }
@@ -352,7 +360,7 @@ class BaselineSortingAlgorithm {
 
 class ImprovedSortingAlgorithm {
     private long executionTime;
-    private static final int INSERTION_SORT_THRESHOLD = 16;
+    private static final int INSERTION_SORT_THRESHOLD = 10;
     
     public long getExecutionTime() { return executionTime; }
     
@@ -396,18 +404,19 @@ class ImprovedSortingAlgorithm {
     }
     
     private int medianOfThree(ArrayList<Book> books, int low, int high) {
-    int mid = low + (high - low) / 2;
+        int mid = low + (high - low) / 2;
+        String a = books.get(low).getTitle();
+        String b = books.get(mid).getTitle();
+        String c = books.get(high).getTitle();
 
-    if (books.get(high).getTitle().compareToIgnoreCase(books.get(low).getTitle()) < 0)
-        swap(books, low, high);
-    if (books.get(mid).getTitle().compareToIgnoreCase(books.get(low).getTitle()) < 0)
-        swap(books, mid, low);
-    if (books.get(high).getTitle().compareToIgnoreCase(books.get(mid).getTitle()) < 0)
-        swap(books, high, mid);
-    
-    swap(books, mid, high - 1);
-    return high - 1;
-}
+        if (a.compareToIgnoreCase(b) <= 0) {
+            if (b.compareToIgnoreCase(c) <= 0) return mid;
+            return (a.compareToIgnoreCase(c) <= 0) ? high : low;
+        } else {
+            if (a.compareToIgnoreCase(c) <= 0) return low;
+            return (b.compareToIgnoreCase(c) <= 0) ? high : mid;
+        }
+    }
     
     private int partition(ArrayList<Book> books, int low, int high, int pivotIndex) {
         Book pivot = books.get(pivotIndex);
@@ -443,66 +452,19 @@ class BaselineSearchingAlgorithm {
     public long getExecutionTime() { return executionTime; }
     
     public ArrayList<Book> searchBooksByTitle(ArrayList<Book> books, String searchTerm) {
+        
         long startTime = System.nanoTime();
         
         ArrayList<Book> sortedBooks = sorter.sortBooks(books);
         ArrayList<Book> results = new ArrayList<>();
-        
-        // Use binary search to find matching title
         String lowerSearch = searchTerm.toLowerCase();
-        int startIdx = findFirstPotentialMatch(sortedBooks, lowerSearch);
-        
-        // Linear scan in case there are other substring matches
-        for (int i = startIdx; i < sortedBooks.size(); i++) {
-            if (sortedBooks.get(i).getTitle().toLowerCase().contains(lowerSearch)) {
-                results.add(sortedBooks.get(i));
-            }
-            // Stop early if we've passed where matches could be
-            if (!couldContainMatch(sortedBooks.get(i).getTitle().toLowerCase(), lowerSearch)) {
-                break;
+        for (Book b : sortedBooks) {
+            if (b.getTitle().toLowerCase().contains(lowerSearch)) {
+                results.add(b);
             }
         }
-        
         executionTime = System.nanoTime() - startTime;
         return results;
-    }
-    
-    private int findFirstPotentialMatch(ArrayList<Book> books, String searchTerm) {
-        if (searchTerm.isEmpty()) return 0;
-        
-        int left = 0;
-        int right = books.size() - 1;
-        int result = 0;
-        
-        // Binary search for first book that could contain the searched term
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            String title = books.get(mid).getTitle().toLowerCase();
-            
-            // Check if this title comes before where our search term could appear
-            if (title.compareTo(searchTerm) < 0) {
-                left = mid + 1;
-            } else {
-                result = mid;
-                right = mid - 1;
-            }
-        }
-        
-        // Back up to ensure we don't miss partial matches
-        while (result > 0 && 
-               books.get(result - 1).getTitle().toLowerCase().charAt(0) >= searchTerm.charAt(0) - 1) {
-            result--;
-        }
-        
-        return Math.max(0, result);
-    }
-    
-    private boolean couldContainMatch(String title, String searchTerm) {
-        if (searchTerm.isEmpty()) return true;
-        // IF THE TITLE STARTS WITH A CHARACTER THAT COMES AFTER ALL SEPARATE MATCHES
-        char firstSearchChar = searchTerm.charAt(0);
-        char firstTitleChar = title.isEmpty() ? 'a' : title.charAt(0);
-        return firstTitleChar <= firstSearchChar + 1;
     }
 }
 
@@ -541,65 +503,25 @@ class ImprovedSearchingAlgorithm {
             wasSorted = true;
         }
 
-        LibraryData.getInstance().getBooks().clear();
-        LibraryData.getInstance().getBooks().addAll(sortedBooksCopy);
+        if (sortedBooksCopy == null) {
+            sortedBooksCopy = sorter.sortBooks(books);
+            sortTime = 0; 
+            wasSorted = false; 
+        }
 
         long startTime = System.nanoTime();
         
         ArrayList<Book> results = new ArrayList<>();
         String lowerSearch = searchTerm.toLowerCase();
         
-        // Binary search to find starting point
-        int startIdx = findFirstPotentialMatch(sortedBooksCopy, lowerSearch);
-        
-        // Then do a linear scan for substring matches
-        for (int i = startIdx; i < sortedBooksCopy.size(); i++) {
-            if (sortedBooksCopy.get(i).getTitle().toLowerCase().contains(lowerSearch)) {
-                results.add(sortedBooksCopy.get(i));
-            }
-            // Early termination when we've passed possible matches
-            if (!couldContainMatch(sortedBooksCopy.get(i).getTitle().toLowerCase(), lowerSearch)) {
-                break;
+        for (Book book : sortedBooksCopy) {
+            if (book.getTitle().toLowerCase().contains(lowerSearch)) {
+                results.add(book);
             }
         }
         
         executionTime = System.nanoTime() - startTime;
         return results;
-    }
-    
-    private int findFirstPotentialMatch(ArrayList<Book> books, String searchTerm) {
-        if (searchTerm.isEmpty()) return 0;
-        
-        int left = 0;
-        int right = books.size() - 1;
-        int result = 0;
-        
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            String title = books.get(mid).getTitle().toLowerCase();
-            
-            if (title.compareTo(searchTerm) < 0) {
-                left = mid + 1;
-            } else {
-                result = mid;
-                right = mid - 1;
-            }
-        }
-        
-        // Back up to catch partial matches
-        while (result > 0 && 
-               books.get(result - 1).getTitle().toLowerCase().charAt(0) >= searchTerm.charAt(0) - 1) {
-            result--;
-        }
-        
-        return Math.max(0, result);
-    }
-    
-    private boolean couldContainMatch(String title, String searchTerm) {
-        if (searchTerm.isEmpty()) return true;
-        char firstSearchChar = searchTerm.charAt(0);
-        char firstTitleChar = title.isEmpty() ? 'a' : title.charAt(0);
-        return firstTitleChar <= firstSearchChar + 1;
     }
 }
 
@@ -673,7 +595,6 @@ class MainSystemFrame extends JFrame {
     private JButton borrowButton;
     private JButton returnButton;
     private JButton compareButton;
-    private JButton refreshButton;
     private boolean showingBooks = true;
     private int searchCount = 0;
 
@@ -725,9 +646,7 @@ class MainSystemFrame extends JFrame {
         
         JPanel algorithmPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         compareButton = new JButton("Compare Algorithms");
-        refreshButton = new JButton("Refresh Cache");
         algorithmPanel.add(compareButton);
-        algorithmPanel.add(refreshButton);
         
         JPanel combinedButtonPanel = new JPanel(new BorderLayout());
         combinedButtonPanel.add(buttonPanel, BorderLayout.WEST);
@@ -747,10 +666,9 @@ class MainSystemFrame extends JFrame {
         addButton.addActionListener(e -> addData());
         borrowButton.addActionListener(e -> new BorrowBookDialog(this));
         returnButton.addActionListener(e -> new ReturnBookDialog(this));
-        compareButton.addActionListener(e -> new CompareAlgorithmsDialog(this));
-        refreshButton.addActionListener(e -> {
-            LibraryData.getInstance().markUnsorted();
-            statusLabel.setText("Status: Cache cleared | Collection is UNSORTED");
+        compareButton.addActionListener(e -> {
+            CompareAlgorithmsDialog dialog = new CompareAlgorithmsDialog(this);
+            dialog.setVisible(true);
         });
 
         loadBooksData();
@@ -837,7 +755,7 @@ class MainSystemFrame extends JFrame {
         if (!wasSortedBefore) {
             status += String.format("Initial sort: %d ns | Collection SORTED (cached)", searcher.getSortTime());
         } else {
-            status += "Collection SORTED (cached) | Binary search optimization";
+            status += "Collection SORTED (cached) | O(log n) complexity";
         }
         
         statusLabel.setText(status);
@@ -848,7 +766,11 @@ class MainSystemFrame extends JFrame {
             LibraryData data = LibraryData.getInstance();
             ImprovedSortingAlgorithm sorter = new ImprovedSortingAlgorithm();
             ArrayList<Book> sortedBooks = sorter.sortBooks(data.getBooks());
-            
+
+            data.getBooks().clear();
+            data.getBooks().addAll(sortedBooks);
+            data.setIsSorted(true);
+
             tableModel.setRowCount(0);
             for (Book book : sortedBooks) {
                 tableModel.addRow(new Object[]{
@@ -857,11 +779,11 @@ class MainSystemFrame extends JFrame {
                     book.isAvailable() ? "-" : book.getBorrowedBy()
                 });
             }
-            
-            data.setIsSorted(true); // Marks as sorted after manual sort!!
+
             long timeNano = sorter.getExecutionTime();
-            statusLabel.setText(String.format("Books sorted alphabetically | Algorithm: QuickSort (Median-of-Threes) | Time: %d ns (%.2f μs) | O(n log n) worst case", 
-                                             timeNano, timeNano / 1000.0));
+            statusLabel.setText(String.format(
+                "Books sorted alphabetically | Algorithm: QuickSort (Median-of-Three) | Time: %d ns (%.2f μs) | O(n log n) worst case",
+                timeNano, timeNano / 1000.0));
         } else {
             LibraryData data = LibraryData.getInstance();
             ArrayList<Member> members = data.getMembers();
@@ -900,6 +822,7 @@ class MainSystemFrame extends JFrame {
 class CompareAlgorithmsDialog extends JDialog {
     public CompareAlgorithmsDialog(JFrame parent) {
         super(parent, "Algorithm Comparison: Baseline vs Improved", true);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(900, 700);
         setLocationRelativeTo(parent);
         
@@ -924,96 +847,100 @@ class CompareAlgorithmsDialog extends JDialog {
         ArrayList<Book> books = data.getBooks();
         sb.append("Dataset Size: ").append(books.size()).append(" books\n\n");
         
+        new BaselineSortingAlgorithm().sortBooks(new ArrayList<>(books));
+        new ImprovedSortingAlgorithm().sortBooks(new ArrayList<>(books));
+
         sb.append("-".repeat(62)).append("\n");
         sb.append("SORTING ALGORITHM COMPARISON\n");
         sb.append("-".repeat(62)).append("\n\n");
-        
-        BaselineSortingAlgorithm baselineSorter = new BaselineSortingAlgorithm();
-        baselineSorter.sortBooks(books);
-        long baselineSortTime = baselineSorter.getExecutionTime();
-        
-        sb.append("1. BASELINE QuickSort (First Element Pivot):\n");
-        sb.append("   Time Complexity: O(n²) worst case\n");
-        sb.append("   Execution Time: ").append(baselineSortTime).append(" ns (")
-          .append(String.format("%.2f", baselineSortTime / 1000.0)).append(" μs)\n\n");
-        
-        ImprovedSortingAlgorithm improvedSorter = new ImprovedSortingAlgorithm();
-        improvedSorter.sortBooks(books);
-        long improvedSortTime = improvedSorter.getExecutionTime();
-        
-        sb.append("2. IMPROVED QuickSort (Median-of-Threes + Insertion Sort):\n");
-        sb.append("   Time Complexity: O(n log n) worst case\n");
-        sb.append("   Execution Time: ").append(improvedSortTime).append(" ns (")
-          .append(String.format("%.2f", improvedSortTime / 1000.0)).append(" μs)\n\n");
-        
-        double sortSpeedup = (double) baselineSortTime / improvedSortTime;
-        sb.append("Sorting Comparison: ").append(String.format("%.2fx", sortSpeedup));
-        if (sortSpeedup < 1) {
-            sb.append(" (Baseline algorithm is faster on this smaller dataset)");
+
+        int runs = 10;
+        long baselineSortTotal = 0;
+        long improvedSortTotal = 0;
+
+        for (int i = 0; i < runs; i++) {
+            ArrayList<Book> baselineBooks = new ArrayList<>(books);
+            ArrayList<Book> improvedBooks = new ArrayList<>(books);
+
+            BaselineSortingAlgorithm baselineSorter = new BaselineSortingAlgorithm();
+            baselineSorter.sortBooks(baselineBooks);
+            baselineSortTotal += baselineSorter.getExecutionTime();
+
+            ImprovedSortingAlgorithm improvedSorter = new ImprovedSortingAlgorithm();
+            improvedSorter.sortBooks(improvedBooks);
+            improvedSortTotal += improvedSorter.getExecutionTime();
         }
 
-        sb.append("\n\n");
+        long baselineSortTime = baselineSortTotal / runs;
+        long improvedSortTime = improvedSortTotal / runs;
+
+        sb.append("1. BASELINE QuickSort (First Element Pivot):\n");
+        sb.append("   Execution Time (avg of ").append(runs).append(" runs): ").append(baselineSortTime)
+        .append(" ns (").append(String.format("%.2f", baselineSortTime / 1000.0)).append(" μs)\n\n");
+        sb.append("2. IMPROVED QuickSort (Median-of-Threes + Insertion Sort):\n");
+        sb.append("   Execution Time (avg of ").append(runs).append(" runs): ").append(improvedSortTime)
+        .append(" ns (").append(String.format("%.2f", improvedSortTime / 1000.0)).append(" μs)\n\n");
+
+        double sortSpeedup = (double) baselineSortTime / improvedSortTime;
+        sb.append("Sorting Comparison: ").append(String.format("%.2fx", sortSpeedup)).append("\n\n");
            
         sb.append("-".repeat(62)).append("\n");
         sb.append("SEARCHING ALGORITHM COMPARISON\n");
         sb.append("-".repeat(62)).append("\n\n");
         
         String searchTerm = "the";
-        
+
         BaselineSearchingAlgorithm baselineSearcher = new BaselineSearchingAlgorithm();
-        baselineSearcher.searchBooksByTitle(books, searchTerm);
-        long baselineSearch1 = baselineSearcher.getExecutionTime();
-        baselineSearcher.searchBooksByTitle(books, searchTerm);
-        long baselineSearch2 = baselineSearcher.getExecutionTime();
-        baselineSearcher.searchBooksByTitle(books, searchTerm);
-        long baselineSearch3 = baselineSearcher.getExecutionTime();
+        long baselineSearchTotal = 0;
+
+        for (int i = 0; i < runs; i++) {
+            data.markUnsorted();
+            baselineSearcher.searchBooksByTitle(new ArrayList<>(books), searchTerm);
+            baselineSearchTotal += baselineSearcher.getExecutionTime();
+        }
+        long baselineSearchAvg = baselineSearchTotal / runs;
         
         sb.append("1. BASELINE Search (Sorts Every Time + Binary Start):\n");
-        sb.append("   Time Complexity: O(n log n) per search\n");
-        sb.append("   First:  ").append(baselineSearch1).append(" ns (")
-          .append(String.format("%.2f", baselineSearch1 / 1000.0)).append(" μs)\n");
-        sb.append("   Second: ").append(baselineSearch2).append(" ns (")
-          .append(String.format("%.2f", baselineSearch2 / 1000.0)).append(" μs)\n");
-        sb.append("   Third:  ").append(baselineSearch3).append(" ns (")
-          .append(String.format("%.2f", baselineSearch3 / 1000.0)).append(" μs)\n");
-        sb.append("   Average: ").append((baselineSearch1 + baselineSearch2 + baselineSearch3) / 3).append(" ns\n\n");
-        
-        data.markUnsorted();
+        sb.append("   Execution Time (avg of ").append(runs).append(" runs): ")
+            .append(baselineSearchAvg).append(" ns (")
+            .append(String.format("%.2f", baselineSearchAvg / 1000.0)).append(" μs)\n\n");
+
         ImprovedSearchingAlgorithm improvedSearcher = new ImprovedSearchingAlgorithm();
-        improvedSearcher.searchBooksByTitle(books, searchTerm);
-        long improvedSearch1 = improvedSearcher.getExecutionTime();
-        improvedSearcher.searchBooksByTitle(books, searchTerm);
-        long improvedSearch2 = improvedSearcher.getExecutionTime();
-        improvedSearcher.searchBooksByTitle(books, searchTerm);
-        long improvedSearch3 = improvedSearcher.getExecutionTime();
+        long improvedSearchTotal = 0;
+
+        for (int i = 0; i < runs; i++) {
+            data.markUnsorted();
+            improvedSearcher.searchBooksByTitle(new ArrayList<>(books), searchTerm);
+            improvedSearchTotal += improvedSearcher.getExecutionTime();
+        }
+
+        long improvedSearchAvg = improvedSearchTotal / runs;
+
+        sb.append("2. IMPROVED Search (isSorted Flag + Cached Sorting):\n");
+        sb.append("   Execution Time (avg of ").append(runs).append(" runs): ")
+            .append(improvedSearchAvg).append(" ns (")
+            .append(String.format("%.2f", improvedSearchAvg / 1000.0)).append(" μs)\n\n");
+
+        double searchSpeedup = (double) baselineSearchAvg / improvedSearchAvg;
+        sb.append("Search Speedup: ").append(String.format("%.2fx", searchSpeedup)).append("\n\n");
         
-        sb.append("2. IMPROVED Search (isSorted Flag + Sorted Cache):\n");
-        sb.append("   Time Complexity: O(n log n) first, O(log n + k) subsequent\n");
-        sb.append("   First:  ").append(improvedSearch1).append(" ns (")
-          .append(String.format("%.2f", improvedSearch1 / 1000.0)).append(" μs) [SORTED]\n");
-        sb.append("   Second: ").append(improvedSearch2).append(" ns (")
-          .append(String.format("%.2f", improvedSearch2 / 1000.0)).append(" μs) [cached]\n");
-        sb.append("   Third:  ").append(improvedSearch3).append(" ns (")
-          .append(String.format("%.2f", improvedSearch3 / 1000.0)).append(" μs) [cached]\n");
-        sb.append("   Avg (cached): ").append((improvedSearch2 + improvedSearch3) / 2).append(" ns\n\n");
-        
-        double cachedSpeedup = (double) baselineSearch2 / improvedSearch2;
-        sb.append("Cached Search Speedup: ").append(String.format("%.2fx", cachedSpeedup)).append("\n\n");
-        
-        int numSearches = 10;
+        baselineSearcher = new BaselineSearchingAlgorithm();
+        improvedSearcher = new ImprovedSearchingAlgorithm();
         long baselineTotal = 0;
-        data.markUnsorted();
         long improvedTotal = 0;
         
-        for (int i = 0; i < numSearches; i++) {
-            baselineSearcher.searchBooksByTitle(books, searchTerm);
+        for (int i = 0; i < runs; i++) {
+            data.markUnsorted();
+            baselineSearcher.searchBooksByTitle(new ArrayList<>(books), searchTerm);
             baselineTotal += baselineSearcher.getExecutionTime();
-            improvedSearcher.searchBooksByTitle(books, searchTerm);
+
+            data.markUnsorted();
+            improvedSearcher.searchBooksByTitle(new ArrayList<>(books), searchTerm);
             improvedTotal += improvedSearcher.getExecutionTime();
         }
         
         sb.append("-".repeat(60)).append("\n");
-        sb.append("AMORTIZED ANALYSIS (").append(numSearches).append(" searches):\n");
+        sb.append("AMORTIZED ANALYSIS (").append(runs).append(" searches):\n");
         sb.append("-".repeat(60)).append("\n");
         sb.append("Baseline Total: ").append(baselineTotal).append(" ns\n");
         sb.append("Improved Total: ").append(improvedTotal).append(" ns\n");
@@ -1021,7 +948,6 @@ class CompareAlgorithmsDialog extends JDialog {
         
         resultsArea.setText(sb.toString());
         resultsArea.setCaretPosition(0);
-        setVisible(true);
     }
 }
 
