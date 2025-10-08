@@ -352,7 +352,7 @@ class BaselineSortingAlgorithm {
 
 class ImprovedSortingAlgorithm {
     private long executionTime;
-    private static final int INSERTION_SORT_THRESHOLD = 32;
+    private static final int INSERTION_SORT_THRESHOLD = 16;
     
     public long getExecutionTime() { return executionTime; }
     
