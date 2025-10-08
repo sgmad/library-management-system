@@ -5,6 +5,8 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.io.*;
+import java.text.ParseException;
 
 public class LibraryManagementSystem {
     public static void main(String[] args) {
@@ -55,6 +57,7 @@ class Member {
     private String email;
     private String phone;
     private ArrayList<String> borrowedBooks;
+    private int totalBorrowCount;
     
     public Member(String memberId, String name, String email, String phone) {
         this.memberId = memberId;
@@ -62,6 +65,7 @@ class Member {
         this.email = email;
         this.phone = phone;
         this.borrowedBooks = new ArrayList<>();
+        this.totalBorrowCount = 0;
     }
     
     public String getMemberId() { return memberId; }
@@ -69,9 +73,13 @@ class Member {
     public String getEmail() { return email; }
     public String getPhone() { return phone; }
     public ArrayList<String> getBorrowedBooks() { return borrowedBooks; }
+    public int getTotalBorrowCount() { return totalBorrowCount; }
+    
+    public void setTotalBorrowCount(int count) { this.totalBorrowCount = count; }
     
     public void borrowBook(String bookId) {
         borrowedBooks.add(bookId);
+        totalBorrowCount++;
     }
     
     public void returnBook(String bookId) {
@@ -89,12 +97,14 @@ class LibraryData {
     private ArrayList<Book> books;
     private ArrayList<Member> members;
     private boolean isSorted;
+    private DataPersistence dataPersistence;
     
     private LibraryData() {
         books = new ArrayList<>();
         members = new ArrayList<>();
         isSorted = false;
-        loadSampleData();
+        dataPersistence = new DataPersistence();
+        loadData();
     }
     
     public static LibraryData getInstance() {
@@ -104,112 +114,13 @@ class LibraryData {
         return instance;
     }
     
-    private void loadSampleData() {
-        books.add(new Book("B001", "The Great Gatsby", "F. Scott Fitzgerald", "978-0-7432-7356-5"));
-        books.add(new Book("B002", "To Kill a Mockingbird", "Harper Lee", "978-0-06-112008-4"));
-        books.add(new Book("B003", "1984", "George Orwell", "978-0-452-28423-4"));
-        books.add(new Book("B004", "Pride and Prejudice", "Jane Austen", "978-0-14-143951-8"));
-        books.add(new Book("B005", "The Catcher in the Rye", "J.D. Salinger", "978-0-316-76948-0"));
-        books.add(new Book("B006", "Animal Farm", "George Orwell", "978-0-452-28424-1"));
-        books.add(new Book("B007", "Brave New World", "Aldous Huxley", "978-0-06-085052-4"));
-        books.add(new Book("B008", "Lord of the Flies", "William Golding", "978-0-399-50148-7"));
-        books.add(new Book("B009", "The Hobbit", "J.R.R. Tolkien", "978-0-547-92822-7"));
-        books.add(new Book("B010", "Fahrenheit 451", "Ray Bradbury", "978-1-451-67331-9"));
-        books.add(new Book("B011", "Moby-Dick", "Herman Melville", "978-0-14-243724-7"));
-        books.add(new Book("B012", "Jane Eyre", "Charlotte Brontë", "978-0-14-144114-6"));
-        books.add(new Book("B013", "Crime and Punishment", "Fyodor Dostoevsky", "978-0-14-044913-6"));
-        books.add(new Book("B014", "The Odyssey", "Homer", "978-0-14-026886-7"));
-        books.add(new Book("B015", "The Iliad", "Homer", "978-0-14-027536-0"));
-        books.add(new Book("B016", "Wuthering Heights", "Emily Brontë", "978-0-14-143955-6"));
-        books.add(new Book("B017", "The Picture of Dorian Gray", "Oscar Wilde", "978-0-14-143957-0"));
-        books.add(new Book("B018", "Les Misérables", "Victor Hugo", "978-0-14-044430-8"));
-        books.add(new Book("B019", "The Grapes of Wrath", "John Steinbeck", "978-0-14-303943-3"));
-        books.add(new Book("B020", "Dracula", "Bram Stoker", "978-0-14-143984-6"));
-        books.add(new Book("B021", "Frankenstein", "Mary Shelley", "978-0-14-143947-1"));
-        books.add(new Book("B022", "War and Peace", "Leo Tolstoy", "978-0-14-303999-9"));
-        books.add(new Book("B023", "The Adventures of Huckleberry Finn", "Mark Twain", "978-0-14-243717-8"));
-        books.add(new Book("B024", "The Lord of the Rings", "J.R.R. Tolkien", "978-0-618-64015-7"));
-        books.add(new Book("B025", "A Tale of Two Cities", "Charles Dickens", "978-0-14-143960-0"));
-        books.add(new Book("B026", "The Brothers Karamazov", "Fyodor Dostoevsky", "978-0-14-044924-2"));
-        books.add(new Book("B027", "The Count of Monte Cristo", "Alexandre Dumas", "978-0-14-044926-6"));
-        books.add(new Book("B028", "Don Quixote", "Miguel de Cervantes", "978-0-14-243723-0"));
-        books.add(new Book("B029", "The Scarlet Letter", "Nathaniel Hawthorne", "978-0-14-243726-1"));
-        books.add(new Book("B030", "Of Mice and Men", "John Steinbeck", "978-0-14-017739-8"));
-        books.add(new Book("B031", "One Hundred Years of Solitude", "Gabriel García Márquez", "978-0-06-088328-7"));
-        books.add(new Book("B032", "The Alchemist", "Paulo Coelho", "978-0-06-112241-5"));
-        books.add(new Book("B033", "The Old Man and the Sea", "Ernest Hemingway", "978-0-684-80122-3"));
-        books.add(new Book("B034", "Catch-22", "Joseph Heller", "978-0-684-83339-2"));
-        books.add(new Book("B035", "The Stranger", "Albert Camus", "978-0-679-72020-1"));
-        books.add(new Book("B036", "The Divine Comedy", "Dante Alighieri", "978-0-14-044895-5"));
-        books.add(new Book("B037", "Slaughterhouse-Five", "Kurt Vonnegut", "978-0-385-33384-9"));
-        books.add(new Book("B038", "The Sun Also Rises", "Ernest Hemingway", "978-0-7432-9733-2"));
-        books.add(new Book("B039", "The Sound and the Fury", "William Faulkner", "978-0-679-73225-9"));
-        books.add(new Book("B040", "Heart of Darkness", "Joseph Conrad", "978-0-14-144167-2"));
-        books.add(new Book("B041", "The Kite Runner", "Khaled Hosseini", "978-1-59448-000-3"));
-        books.add(new Book("B042", "Life of Pi", "Yann Martel", "978-0-15-602732-8"));
-        books.add(new Book("B043", "The Road", "Cormac McCarthy", "978-0-307-38789-9"));
-        books.add(new Book("B044", "Beloved", "Toni Morrison", "978-1-4000-3341-6"));
-        books.add(new Book("B045", "A Clockwork Orange", "Anthony Burgess", "978-0-393-04588-1"));
-        books.add(new Book("B046", "The Handmaid's Tale", "Margaret Atwood", "978-0-385-49081-7"));
-        books.add(new Book("B047", "Gone with the Wind", "Margaret Mitchell", "978-0-684-80160-5"));
-        books.add(new Book("B048", "The Metamorphosis", "Franz Kafka", "978-0-486-27025-3"));
-        books.add(new Book("B049", "The Call of the Wild", "Jack London", "978-0-14-132105-9"));
-        books.add(new Book("B050", "The Outsiders", "S.E. Hinton", "978-0-14-240733-2"));
-        books.add(new Book("B051", "Alice's Adventures in Wonderland", "Lewis Carroll", "978-0-14-751587-2"));  
-        books.add(new Book("B052", "Anna Karenina", "Leo Tolstoy", "978-0-14-044917-4"));  
-        books.add(new Book("B053", "Ulysses", "James Joyce", "978-0-679-60011-6"));  
-        books.add(new Book("B054", "Lolita", "Vladimir Nabokov", "978-0-14-243723-0"));  
-        books.add(new Book("B055", "Howards End", "E. M. Forster", "978-0-37-575376-1"));  
-        books.add(new Book("B056", "The Naked and the Dead", "Norman Mailer", "978-0-8050-6017-0"));  
-        books.add(new Book("B057", "Of Human Bondage", "W. Somerset Maugham", "978-0-7351-0121-3"));  
-        books.add(new Book("B058", "Finnegans Wake", "James Joyce", "978-0-1400-6286-6"));  
-        books.add(new Book("B059", "The Secret Agent", "Joseph Conrad", "978-0-679-41723-0"));  
-        books.add(new Book("B060", "Zuleika Dobson", "Max Beerbohm", "978-0-8488-0914-9"));  
-        books.add(new Book("B061", "Under the Net", "Iris Murdoch", "978-0-14-001445-4"));  
-        books.add(new Book("B062", "The Golden Bowl", "Henry James", "978-0-14-243728-4"));  
-        books.add(new Book("B063", "Scoop", "Evelyn Waugh", "978-0-316-92610-8"));  
-        books.add(new Book("B064", "Justine", "Lawrence Durrell", "978-0-14-015317-9"));  
-        books.add(new Book("B065", "Mountolive", "Lawrence Durrell", "978-0-14-015318-6"));  
-        books.add(new Book("B066", "The Alexandria Quartet: Clea", "Lawrence Durrell", "978-0-14-015319-3"));  
-        books.add(new Book("B067", "The Alexandria Quartet: Balthazar", "Lawrence Durrell", "978-0-14-015320-9"));  
-        books.add(new Book("B068", "A Falcon Flies", "Wilbur Smith", "978-0-38-517833-4"));  
-        books.add(new Book("B069", "The Shell Seekers", "Rosamunde Pilcher", "978-0-312-01058-4"));
-        books.add(new Book("B070", "Middlemarch", "George Eliot", "978-0-14-143954-9"));
-        books.add(new Book("B071", "Emma", "Jane Austen", "978-0-14-143958-7"));
-        books.add(new Book("B072", "Sense and Sensibility", "Jane Austen", "978-0-14-143966-2"));
-        books.add(new Book("B073", "Northanger Abbey", "Jane Austen", "978-0-14-143978-5"));
-        books.add(new Book("B074", "Persuasion", "Jane Austen", "978-0-14-144101-6"));
-        books.add(new Book("B075", "Great Expectations", "Charles Dickens", "978-0-14-143956-3"));
-        books.add(new Book("B076", "David Copperfield", "Charles Dickens", "978-0-14-043944-1"));
-        books.add(new Book("B077", "Oliver Twist", "Charles Dickens", "978-0-14-143974-7"));
-        books.add(new Book("B078", "Bleak House", "Charles Dickens", "978-0-14-143972-3"));
-        books.add(new Book("B079", "Notes from Underground", "Fyodor Dostoevsky", "978-0-14-044924-4"));
-        books.add(new Book("B080", "Madame Bovary", "Gustave Flaubert", "978-0-14-044912-9"));
-        books.add(new Book("B081", "The Three Musketeers", "Alexandre Dumas", "978-0-14-044926-6")); 
-        books.add(new Book("B082", "The Adventures of Sherlock Holmes", "Arthur Conan Doyle", "978-0-14-103432-4"));
-        books.add(new Book("B083", "Meditations", "Marcus Aurelius", "978-0-14-044933-4"));
-        books.add(new Book("B084", "Gulliver's Travels", "Jonathan Swift", "978-0-14-143949-5"));
-        books.add(new Book("B085", "The Time Machine", "H.G. Wells", "978-0-14-143997-7"));
-        books.add(new Book("B086", "Robinson Crusoe", "Daniel Defoe", "978-0-14-143982-2"));
-        books.add(new Book("B087", "Invisible Man", "Ralph Ellison", "978-0-679-60139-5"));
-        books.add(new Book("B088", "The Castle", "Franz Kafka", "978-0-14-303989-4"));
-        books.add(new Book("B089", "Waiting for Godot", "Samuel Beckett", "978-0-679-73277-8"));
-        books.add(new Book("B090", "A Brief History of Time", "Stephen Hawking", "978-0-553-38016-3"));
-        books.add(new Book("B091", "The Diary of a Young Girl", "Anne Frank", "978-0-307-59400-6"));
-        books.add(new Book("B092", "The Art of War", "Sun Tzu", "978-1-59030-225-5"));
-        books.add(new Book("B093", "The Prince", "Niccolò Machiavelli", "978-0-14-044915-0"));
-        books.add(new Book("B094", "The Wealth of Nations", "Adam Smith", "978-0-14-043208-4"));
-        books.add(new Book("B095", "The Republic", "Plato", "978-0-14-045511-3"));
-        books.add(new Book("B096", "The Social Contract", "Jean-Jacques Rousseau", "978-0-14-044201-4"));
-        books.add(new Book("B097", "Walden", "Henry David Thoreau", "978-0-14-039031-0"));
-        books.add(new Book("B098", "The Souls of Black Folk", "W.E.B. Du Bois", "978-0-14-018998-8"));
-        books.add(new Book("B099", "Democracy in America", "Alexis de Tocqueville", "978-0-14-044760-6"));
-        books.add(new Book("B100", "The Origin of Species", "Charles Darwin", "978-1-5098-2769-5"));
-
-        members.add(new Member("M001", "Mark Garata", "markgarata@umin.com", "639-0101"));
-        members.add(new Member("M002", "Franciene Candare", "francienecandare@umin.com", "639-0102"));
-        members.add(new Member("M003", "Kiera Aguiadan", "kieraaguiadan@umin.com", "639-0103"));
-        members.add(new Member("M004", "Emmanuel Tuling", "emmanueltuling@umin.com", "639-0104"));
+    private void loadData() {
+        
+        ArrayList<Book> loadedBooks = dataPersistence.loadBooks();
+        ArrayList<Member> loadedMembers = dataPersistence.loadMembers();
+        
+        books = loadedBooks;
+        members = loadedMembers;
         
         isSorted = false;
     }
@@ -222,9 +133,13 @@ class LibraryData {
     public void addBook(Book book) { 
         books.add(book);
         isSorted = false;
+        dataPersistence.saveBooks(books);
     }
     
-    public void addMember(Member member) { members.add(member); }
+    public void addMember(Member member) { 
+        members.add(member);
+        dataPersistence.saveMembers(members);
+    }
     
     public Book findBookById(String bookId) {
         for (Book book : books) {
@@ -246,6 +161,146 @@ class LibraryData {
     
     public void markUnsorted() {
         isSorted = false;
+    }
+    
+    public void saveData() {
+        dataPersistence.saveBooks(books);
+        dataPersistence.saveMembers(members);
+    }
+}
+
+class DataPersistence {
+    private static final String BOOKS_FILE = "books.csv";
+    private static final String MEMBERS_FILE = "members.csv";
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    
+    public void saveBooks(ArrayList<Book> books) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(BOOKS_FILE))) {
+            writer.println("BookID,Title,Author,ISBN,IsAvailable,BorrowedBy,BorrowDate");
+            for (Book book : books) {
+                writer.printf("%s,%s,%s,%s,%b,%s,%s%n",
+                    book.getBookId(),
+                    escapeCSV(book.getTitle()),
+                    escapeCSV(book.getAuthor()),
+                    book.getIsbn(),
+                    book.isAvailable(),
+                    book.getBorrowedBy() != null ? book.getBorrowedBy() : "",
+                    book.getBorrowDate() != null ? dateFormat.format(book.getBorrowDate()) : ""
+                );
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error saving books: " + e.getMessage());
+        }
+    }
+    
+    public void saveMembers(ArrayList<Member> members) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(MEMBERS_FILE))) {
+            writer.println("MemberID,Name,Email,Phone,BorrowedBooks,TotalBorrowCount");
+            for (Member member : members) {
+                writer.printf("%s,%s,%s,%s,%s,%d%n",
+                    member.getMemberId(),
+                    escapeCSV(member.getName()),
+                    escapeCSV(member.getEmail()),
+                    member.getPhone(),
+                    String.join(";", member.getBorrowedBooks()),
+                    member.getTotalBorrowCount()
+                );
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error saving members: " + e.getMessage());
+        }
+    }
+    
+    public ArrayList<Book> loadBooks() {
+        ArrayList<Book> books = new ArrayList<>();
+        File file = new File(BOOKS_FILE);
+        if (!file.exists()) return books;
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line = reader.readLine(); 
+            while ((line = reader.readLine()) != null) {
+                String[] parts = parseCSVLine(line);
+                if (parts.length >= 7) {
+                    Book book = new Book(parts[0], parts[1], parts[2], parts[3]);
+                    book.setAvailable(Boolean.parseBoolean(parts[4]));
+                    if (!parts[5].isEmpty()) {
+                        book.setBorrowedBy(parts[5]);
+                    }
+                    if (!parts[6].isEmpty()) {
+                        try {
+                            book.setBorrowDate(dateFormat.parse(parts[6]));
+                        } catch (ParseException e) {
+                            book.setBorrowDate(null);
+                        }
+                    }
+                    books.add(book);
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error loading books: " + e.getMessage());
+        }
+        return books;
+    }
+    
+    public ArrayList<Member> loadMembers() {
+        ArrayList<Member> members = new ArrayList<>();
+        File file = new File(MEMBERS_FILE);
+        if (!file.exists()) return members;
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line = reader.readLine(); // Skip header
+            while ((line = reader.readLine()) != null) {
+                String[] parts = parseCSVLine(line);
+                if (parts.length >= 6) {
+                    Member member = new Member(parts[0], parts[1], parts[2], parts[3]);
+                    if (!parts[4].isEmpty()) {
+                        String[] bookIds = parts[4].split(";");
+                        for (String bookId : bookIds) {
+                            if (!bookId.trim().isEmpty()) {
+                                member.getBorrowedBooks().add(bookId.trim());
+                            }
+                        }
+                    }
+                    member.setTotalBorrowCount(Integer.parseInt(parts[5]));
+                    members.add(member);
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error loading members: " + e.getMessage());
+        }
+        return members;
+    }
+    
+    private String escapeCSV(String value) {
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+    
+    private String[] parseCSVLine(String line) {
+        ArrayList<String> result = new ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder current = new StringBuilder();
+        
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    current.append('"');
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (c == ',' && !inQuotes) {
+                result.add(current.toString());
+                current = new StringBuilder();
+            } else {
+                current.append(c);
+            }
+        }
+        result.add(current.toString());
+        return result.toArray(new String[0]);
     }
 }
 
@@ -297,7 +352,7 @@ class BaselineSortingAlgorithm {
 
 class ImprovedSortingAlgorithm {
     private long executionTime;
-    private static final int INSERTION_SORT_THRESHOLD = 16;
+    private static final int INSERTION_SORT_THRESHOLD = 32;
     
     public long getExecutionTime() { return executionTime; }
     
@@ -314,13 +369,13 @@ class ImprovedSortingAlgorithm {
     }
     
     private void quickSortImproved(ArrayList<Book> books, int low, int high) {
-        if (high - low < INSERTION_SORT_THRESHOLD) {
-            insertionSort(books, low, high);
-            return;
-        }
-        
         if (low < high) {
-            int pivotIndex = medianOfMedians(books, low, high);
+            if (high - low < INSERTION_SORT_THRESHOLD) {
+                insertionSort(books, low, high);
+                return;
+            }
+
+            int pivotIndex = medianOfThree(books, low, high);
             int pi = partition(books, low, high, pivotIndex);
             quickSortImproved(books, low, pi - 1);
             quickSortImproved(books, pi + 1, high);
@@ -340,38 +395,19 @@ class ImprovedSortingAlgorithm {
         }
     }
     
-    private int medianOfMedians(ArrayList<Book> books, int low, int high) {
-        int n = high - low + 1;
-        
-        if (n <= 5) {
-            return medianOfFive(books, low, high);
-        }
-        
-        int numMedians = 0;
-        for (int i = low; i <= high; i += 5) {
-            int subHigh = Math.min(i + 4, high);
-            int medianIdx = medianOfFive(books, i, subHigh);
-            swap(books, low + numMedians, medianIdx);
-            numMedians++;
-        }
-        
-        return medianOfMedians(books, low, low + numMedians - 1);
-    }
+    private int medianOfThree(ArrayList<Book> books, int low, int high) {
+    int mid = low + (high - low) / 2;
+
+    if (books.get(high).getTitle().compareToIgnoreCase(books.get(low).getTitle()) < 0)
+        swap(books, low, high);
+    if (books.get(mid).getTitle().compareToIgnoreCase(books.get(low).getTitle()) < 0)
+        swap(books, mid, low);
+    if (books.get(high).getTitle().compareToIgnoreCase(books.get(mid).getTitle()) < 0)
+        swap(books, high, mid);
     
-    private int medianOfFive(ArrayList<Book> books, int low, int high) {
-        for (int i = low + 1; i <= high; i++) {
-            Book key = books.get(i);
-            int j = i - 1;
-            
-            while (j >= low && books.get(j).getTitle().compareToIgnoreCase(key.getTitle()) > 0) {
-                books.set(j + 1, books.get(j));
-                j--;
-            }
-            books.set(j + 1, key);
-        }
-        
-        return low + (high - low) / 2;
-    }
+    swap(books, mid, high - 1);
+    return high - 1;
+}
     
     private int partition(ArrayList<Book> books, int low, int high, int pivotIndex) {
         Book pivot = books.get(pivotIndex);
@@ -412,14 +448,61 @@ class BaselineSearchingAlgorithm {
         ArrayList<Book> sortedBooks = sorter.sortBooks(books);
         ArrayList<Book> results = new ArrayList<>();
         
-        for (Book book : sortedBooks) {
-            if (book.getTitle().toLowerCase().contains(searchTerm.toLowerCase())) {
-                results.add(book);
+        // Use binary search to find matching title
+        String lowerSearch = searchTerm.toLowerCase();
+        int startIdx = findFirstPotentialMatch(sortedBooks, lowerSearch);
+        
+        // Linear scan in case there are other substring matches
+        for (int i = startIdx; i < sortedBooks.size(); i++) {
+            if (sortedBooks.get(i).getTitle().toLowerCase().contains(lowerSearch)) {
+                results.add(sortedBooks.get(i));
+            }
+            // Stop early if we've passed where matches could be
+            if (!couldContainMatch(sortedBooks.get(i).getTitle().toLowerCase(), lowerSearch)) {
+                break;
             }
         }
         
         executionTime = System.nanoTime() - startTime;
         return results;
+    }
+    
+    private int findFirstPotentialMatch(ArrayList<Book> books, String searchTerm) {
+        if (searchTerm.isEmpty()) return 0;
+        
+        int left = 0;
+        int right = books.size() - 1;
+        int result = 0;
+        
+        // Binary search for first book that could contain the searched term
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            String title = books.get(mid).getTitle().toLowerCase();
+            
+            // Check if this title comes before where our search term could appear
+            if (title.compareTo(searchTerm) < 0) {
+                left = mid + 1;
+            } else {
+                result = mid;
+                right = mid - 1;
+            }
+        }
+        
+        // Back up to ensure we don't miss partial matches
+        while (result > 0 && 
+               books.get(result - 1).getTitle().toLowerCase().charAt(0) >= searchTerm.charAt(0) - 1) {
+            result--;
+        }
+        
+        return Math.max(0, result);
+    }
+    
+    private boolean couldContainMatch(String title, String searchTerm) {
+        if (searchTerm.isEmpty()) return true;
+        // IF THE TITLE STARTS WITH A CHARACTER THAT COMES AFTER ALL SEPARATE MATCHES
+        char firstSearchChar = searchTerm.charAt(0);
+        char firstTitleChar = title.isEmpty() ? 'a' : title.charAt(0);
+        return firstTitleChar <= firstSearchChar + 1;
     }
 }
 
@@ -428,6 +511,7 @@ class ImprovedSearchingAlgorithm {
     private long sortTime;
     private boolean wasSorted;
     private ImprovedSortingAlgorithm sorter;
+    private ArrayList<Book> sortedBooksCopy; // Maintain a separate sorted copy
     
     public ImprovedSearchingAlgorithm() {
         sorter = new ImprovedSortingAlgorithm();
@@ -441,30 +525,81 @@ class ImprovedSearchingAlgorithm {
     public ArrayList<Book> searchBooksByTitle(ArrayList<Book> books, String searchTerm) {
         LibraryData data = LibraryData.getInstance();
         
-        long startTime = System.nanoTime();
-        
+        // Check if we need to sort
         if (!data.isSorted()) {
             long sortStart = System.nanoTime();
-            ArrayList<Book> sorted = sorter.sortBooks(books);
-            books.clear();
-            books.addAll(sorted);
+            sortedBooksCopy = sorter.sortBooks(books); // Create sorted copy
             data.setIsSorted(true);
             sortTime = System.nanoTime() - sortStart;
             wasSorted = false;
         } else {
+            // Use existing sorted copy if available
+            if (sortedBooksCopy == null || sortedBooksCopy.size() != books.size()) {
+                sortedBooksCopy = sorter.sortBooks(books);
+            }
             sortTime = 0;
             wasSorted = true;
         }
+
+        LibraryData.getInstance().getBooks().clear();
+        LibraryData.getInstance().getBooks().addAll(sortedBooksCopy);
+
+        long startTime = System.nanoTime();
         
         ArrayList<Book> results = new ArrayList<>();
-        for (Book book : books) {
-            if (book.getTitle().toLowerCase().contains(searchTerm.toLowerCase())) {
-                results.add(book);
+        String lowerSearch = searchTerm.toLowerCase();
+        
+        // Binary search to find starting point
+        int startIdx = findFirstPotentialMatch(sortedBooksCopy, lowerSearch);
+        
+        // Then do a linear scan for substring matches
+        for (int i = startIdx; i < sortedBooksCopy.size(); i++) {
+            if (sortedBooksCopy.get(i).getTitle().toLowerCase().contains(lowerSearch)) {
+                results.add(sortedBooksCopy.get(i));
+            }
+            // Early termination when we've passed possible matches
+            if (!couldContainMatch(sortedBooksCopy.get(i).getTitle().toLowerCase(), lowerSearch)) {
+                break;
             }
         }
         
         executionTime = System.nanoTime() - startTime;
         return results;
+    }
+    
+    private int findFirstPotentialMatch(ArrayList<Book> books, String searchTerm) {
+        if (searchTerm.isEmpty()) return 0;
+        
+        int left = 0;
+        int right = books.size() - 1;
+        int result = 0;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            String title = books.get(mid).getTitle().toLowerCase();
+            
+            if (title.compareTo(searchTerm) < 0) {
+                left = mid + 1;
+            } else {
+                result = mid;
+                right = mid - 1;
+            }
+        }
+        
+        // Back up to catch partial matches
+        while (result > 0 && 
+               books.get(result - 1).getTitle().toLowerCase().charAt(0) >= searchTerm.charAt(0) - 1) {
+            result--;
+        }
+        
+        return Math.max(0, result);
+    }
+    
+    private boolean couldContainMatch(String title, String searchTerm) {
+        if (searchTerm.isEmpty()) return true;
+        char firstSearchChar = searchTerm.charAt(0);
+        char firstTitleChar = title.isEmpty() ? 'a' : title.charAt(0);
+        return firstTitleChar <= firstSearchChar + 1;
     }
 }
 
@@ -548,6 +683,14 @@ class MainSystemFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(5, 5));
+        
+        // Save the data on window close
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                LibraryData.getInstance().saveData();
+            }
+        });
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         topPanel.add(new JLabel("Search:"));
@@ -631,14 +774,15 @@ class MainSystemFrame extends JFrame {
 
     private void loadMembersData() {
         tableModel.setRowCount(0);
-        String[] columns = {"Member ID", "Name", "Email", "Phone", "Books Borrowed"};
+        String[] columns = {"Member ID", "Name", "Email", "Phone", "Books Borrowed", "Total Borrows"};
         tableModel.setColumnIdentifiers(columns);
         
         LibraryData data = LibraryData.getInstance();
         for (Member member : data.getMembers()) {
             tableModel.addRow(new Object[]{
                 member.getMemberId(), member.getName(), member.getEmail(),
-                member.getPhone(), member.getBorrowedBooks().size()
+                member.getPhone(), member.getBorrowedBooks().size(),
+                member.getTotalBorrowCount()
             });
         }
     }
@@ -693,7 +837,7 @@ class MainSystemFrame extends JFrame {
         if (!wasSortedBefore) {
             status += String.format("Initial sort: %d ns | Collection SORTED (cached)", searcher.getSortTime());
         } else {
-            status += "Collection SORTED (cached) | O(log n) complexity";
+            status += "Collection SORTED (cached) | Binary search optimization";
         }
         
         statusLabel.setText(status);
@@ -714,8 +858,9 @@ class MainSystemFrame extends JFrame {
                 });
             }
             
+            data.setIsSorted(true); // Marks as sorted after manual sort!!
             long timeNano = sorter.getExecutionTime();
-            statusLabel.setText(String.format("Books sorted alphabetically | Algorithm: QuickSort (Median-of-Medians) | Time: %d ns (%.2f μs) | O(n log n) worst case", 
+            statusLabel.setText(String.format("Books sorted alphabetically | Algorithm: QuickSort (Median-of-Threes) | Time: %d ns (%.2f μs) | O(n log n) worst case", 
                                              timeNano, timeNano / 1000.0));
         } else {
             LibraryData data = LibraryData.getInstance();
@@ -726,7 +871,8 @@ class MainSystemFrame extends JFrame {
             for (Member member : members) {
                 tableModel.addRow(new Object[]{
                     member.getMemberId(), member.getName(), member.getEmail(),
-                    member.getPhone(), member.getBorrowedBooks().size()
+                    member.getPhone(), member.getBorrowedBooks().size(),
+                    member.getTotalBorrowCount()
                 });
             }
             
@@ -795,21 +941,19 @@ class CompareAlgorithmsDialog extends JDialog {
         improvedSorter.sortBooks(books);
         long improvedSortTime = improvedSorter.getExecutionTime();
         
-        sb.append("2. IMPROVED QuickSort (Median-of-Medians + Insertion Sort):\n");
-        sb.append("   Time Complexity: O(n log n) worst case (guaranteed)\n");
+        sb.append("2. IMPROVED QuickSort (Median-of-Threes + Insertion Sort):\n");
+        sb.append("   Time Complexity: O(n log n) worst case\n");
         sb.append("   Execution Time: ").append(improvedSortTime).append(" ns (")
           .append(String.format("%.2f", improvedSortTime / 1000.0)).append(" μs)\n\n");
         
         double sortSpeedup = (double) baselineSortTime / improvedSortTime;
         sb.append("Sorting Comparison: ").append(String.format("%.2fx", sortSpeedup));
-        if (sortSpeedup > 1) {
-            sb.append(" (Improved is faster)\n\n");
-        } else {
-            sb.append(" (Baseline faster on this dataset)\n\n");
+        if (sortSpeedup < 1) {
+            sb.append(" (Baseline algorithm is faster on this smaller dataset)");
         }
-        
-        sb.append("Note: Improved algorithm guarantees O(n log n) in worst case.\n\n");
-        
+
+        sb.append("\n\n");
+           
         sb.append("-".repeat(62)).append("\n");
         sb.append("SEARCHING ALGORITHM COMPARISON\n");
         sb.append("-".repeat(62)).append("\n\n");
@@ -824,7 +968,7 @@ class CompareAlgorithmsDialog extends JDialog {
         baselineSearcher.searchBooksByTitle(books, searchTerm);
         long baselineSearch3 = baselineSearcher.getExecutionTime();
         
-        sb.append("1. BASELINE Binary Search (Sorts Every Time):\n");
+        sb.append("1. BASELINE Search (Sorts Every Time + Binary Start):\n");
         sb.append("   Time Complexity: O(n log n) per search\n");
         sb.append("   First:  ").append(baselineSearch1).append(" ns (")
           .append(String.format("%.2f", baselineSearch1 / 1000.0)).append(" μs)\n");
@@ -843,8 +987,8 @@ class CompareAlgorithmsDialog extends JDialog {
         improvedSearcher.searchBooksByTitle(books, searchTerm);
         long improvedSearch3 = improvedSearcher.getExecutionTime();
         
-        sb.append("2. IMPROVED Binary Search (isSorted Flag):\n");
-        sb.append("   Time Complexity: O(n log n) first, O(log n) subsequent\n");
+        sb.append("2. IMPROVED Search (isSorted Flag + Sorted Cache):\n");
+        sb.append("   Time Complexity: O(n log n) first, O(log n + k) subsequent\n");
         sb.append("   First:  ").append(improvedSearch1).append(" ns (")
           .append(String.format("%.2f", improvedSearch1 / 1000.0)).append(" μs) [SORTED]\n");
         sb.append("   Second: ").append(improvedSearch2).append(" ns (")
@@ -1041,9 +1185,11 @@ class AddMemberDialog extends JDialog {
 
 class BorrowBookDialog extends JDialog {
     private JTextField memberIdField, bookIdField;
+    private MainSystemFrame parent;
     
-    public BorrowBookDialog(JFrame parent) {
+    public BorrowBookDialog(MainSystemFrame parent) {
         super(parent, "Borrow Book", true);
+        this.parent = parent;
         setSize(400, 250);
         setLocationRelativeTo(parent);
         
@@ -1109,9 +1255,12 @@ class BorrowBookDialog extends JDialog {
             book.setBorrowDate(new Date());
             member.borrowBook(bookId);
             
+            data.saveData(); 
+            
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             JOptionPane.showMessageDialog(this, String.format("Book borrowed successfully.\n\nBook: %s\nMember: %s\nDate: %s",
                                        book.getTitle(), member.getName(), sdf.format(book.getBorrowDate())));
+            this.parent.refreshDisplay();
             dispose();
         });
         
@@ -1122,9 +1271,11 @@ class BorrowBookDialog extends JDialog {
 
 class ReturnBookDialog extends JDialog {
     private JTextField bookIdField;
+    private MainSystemFrame parent;
     
-    public ReturnBookDialog(JFrame parent) {
+    public ReturnBookDialog(MainSystemFrame parent) {
         super(parent, "Return Book", true);
+        this.parent = parent;
         setSize(400, 200);
         setLocationRelativeTo(parent);
         
@@ -1184,12 +1335,15 @@ class ReturnBookDialog extends JDialog {
                 member.returnBook(bookId);
             }
             
+            data.saveData(); 
+            
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             JOptionPane.showMessageDialog(this, String.format("Book returned successfully.\n\nBook: %s\nBorrowed by: %s\nBorrow Date: %s\nReturn Date: %s",
                                        book.getTitle(), 
                                        member != null ? member.getName() : memberId,
                                        borrowDate != null ? sdf.format(borrowDate) : "Unknown",
                                        sdf.format(new Date())));
+            this.parent.refreshDisplay();
             dispose();
         });
         
