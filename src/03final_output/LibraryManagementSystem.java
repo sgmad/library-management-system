@@ -92,15 +92,42 @@ class Member {
     }
 }
 
+class CustomBookList {
+    private ArrayList<Book> books;
+
+    public CustomBookList() {
+        books = new ArrayList<>();
+    }
+
+    public void add(Book b) { books.add(b); }
+    public Book get(int i) { return books.get(i); }
+    public int size() { return books.size(); }
+    public ArrayList<Book> toArrayList() { return new ArrayList<>(books); }
+
+    public void clear() { books.clear(); }
+    public boolean isEmpty() { return books.isEmpty(); }
+
+    public ArrayList<Book> sort(ImprovedSortingAlgorithm sorter) {
+        return sorter.sortBooks(toArrayList());
+    }
+
+    public Book findById(String id) {
+        for (Book b : books) {
+            if (b.getBookId().equals(id)) return b;
+        }
+        return null;
+    }
+}
+
 class LibraryData {
     private static LibraryData instance;
-    private ArrayList<Book> books;
+    private CustomBookList books;
     private ArrayList<Member> members;
     private boolean isSorted;
     private DataPersistence dataPersistence;
     
     private LibraryData() {
-        books = new ArrayList<>();
+        books = new CustomBookList();
         members = new ArrayList<>();
         isSorted = false;
         dataPersistence = new DataPersistence();
@@ -115,17 +142,23 @@ class LibraryData {
     }
     
     private void loadData() {
-        
+        // load ArrayLists from persistence
         ArrayList<Book> loadedBooks = dataPersistence.loadBooks();
         ArrayList<Member> loadedMembers = dataPersistence.loadMembers();
         
-        books = loadedBooks;
-        members = loadedMembers;
+        // copy into our CustomBookList
+        books = new CustomBookList();
+        for (Book b : loadedBooks) {
+            books.add(b);
+        }
+
+        // keep members as ArrayList<Member>
+        members = loadedMembers != null ? loadedMembers : new ArrayList<>();
         
         isSorted = false;
     }
     
-    public ArrayList<Book> getBooks() { return books; }
+    public ArrayList<Book> getBooks() { return books.toArrayList(); }
     public ArrayList<Member> getMembers() { return members; }
     public boolean isSorted() { return isSorted; }
     public void setIsSorted(boolean sorted) { this.isSorted = sorted; }
@@ -133,7 +166,8 @@ class LibraryData {
     public void addBook(Book book) { 
         books.add(book);
         isSorted = false;
-        dataPersistence.saveBooks(books);
+        // persist via ArrayList conversion
+        dataPersistence.saveBooks(books.toArrayList());
     }
     
     public void addMember(Member member) { 
@@ -142,12 +176,7 @@ class LibraryData {
     }
     
     public Book findBookById(String bookId) {
-        for (Book book : books) {
-            if (book.getBookId().equals(bookId)) {
-                return book;
-            }
-        }
-        return null;
+        return books.findById(bookId);
     }
     
     public Member findMemberById(String memberId) {
@@ -164,7 +193,7 @@ class LibraryData {
     }
     
     public void saveData() {
-        dataPersistence.saveBooks(books);
+        dataPersistence.saveBooks(books.toArrayList());
         dataPersistence.saveMembers(members);
     }
 }
@@ -473,29 +502,28 @@ class ImprovedSearchingAlgorithm {
     private long sortTime;
     private boolean wasSorted;
     private ImprovedSortingAlgorithm sorter;
-    private ArrayList<Book> sortedBooksCopy; // Maintain a separate sorted copy
-    
+    private ArrayList<Book> sortedBooksCopy;
+
     public ImprovedSearchingAlgorithm() {
         sorter = new ImprovedSortingAlgorithm();
         sortTime = 0;
     }
-    
+
     public long getExecutionTime() { return executionTime; }
     public long getSortTime() { return sortTime; }
     public boolean wasSorted() { return wasSorted; }
-    
+
     public ArrayList<Book> searchBooksByTitle(ArrayList<Book> books, String searchTerm) {
         LibraryData data = LibraryData.getInstance();
-        
-        // Check if we need to sort
+
+        // Sort
         if (!data.isSorted()) {
             long sortStart = System.nanoTime();
-            sortedBooksCopy = sorter.sortBooks(books); // Create sorted copy
+            sortedBooksCopy = sorter.sortBooks(books);
             data.setIsSorted(true);
             sortTime = System.nanoTime() - sortStart;
             wasSorted = false;
         } else {
-            // Use existing sorted copy if available
             if (sortedBooksCopy == null || sortedBooksCopy.size() != books.size()) {
                 sortedBooksCopy = sorter.sortBooks(books);
             }
@@ -505,23 +533,45 @@ class ImprovedSearchingAlgorithm {
 
         if (sortedBooksCopy == null) {
             sortedBooksCopy = sorter.sortBooks(books);
-            sortTime = 0; 
-            wasSorted = false; 
+            sortTime = 0;
+            wasSorted = false;
         }
 
         long startTime = System.nanoTime();
-        
         ArrayList<Book> results = new ArrayList<>();
-        String lowerSearch = searchTerm.toLowerCase();
-        
-        for (Book book : sortedBooksCopy) {
-            if (book.getTitle().toLowerCase().contains(lowerSearch)) {
-                results.add(book);
-            }
+
+        // Hybrid binary search
+        int index = hybridBinarySearch(sortedBooksCopy, searchTerm);
+        if (index != -1) {
+            results.add(sortedBooksCopy.get(index));
         }
-        
+
         executionTime = System.nanoTime() - startTime;
         return results;
+    }
+
+    private int hybridBinarySearch(ArrayList<Book> books, String searchTerm) {
+        int left = 0;
+        int right = books.size() - 1;
+        String lowerSearch = searchTerm.toLowerCase();
+
+        while (right - left > 3) {
+            int mid = left + ((right - left) >>> 1);
+            String midTitle = books.get(mid).getTitle().toLowerCase();
+
+            if (midTitle.equals(lowerSearch)) return mid;
+            if (midTitle.compareTo(lowerSearch) < 0)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+
+        // Linear fallback for small range
+        for (int i = left; i <= right; i++) {
+            if (books.get(i).getTitle().toLowerCase().contains(lowerSearch))
+                return i;
+        }
+        return -1;
     }
 }
 
@@ -645,7 +695,8 @@ class MainSystemFrame extends JFrame {
         buttonPanel.add(returnButton);
         
         JPanel algorithmPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-        compareButton = new JButton("Compare Algorithms");
+        compareButton = new JButton("Compare Algorithms"); // according to sir Yamaguchi: "Remove Compare Algorithms"... for this DSA subject
+        compareButton.setVisible(false);
         algorithmPanel.add(compareButton);
         
         JPanel combinedButtonPanel = new JPanel(new BorderLayout());
@@ -666,10 +717,6 @@ class MainSystemFrame extends JFrame {
         addButton.addActionListener(e -> addData());
         borrowButton.addActionListener(e -> new BorrowBookDialog(this));
         returnButton.addActionListener(e -> new ReturnBookDialog(this));
-        compareButton.addActionListener(e -> {
-            CompareAlgorithmsDialog dialog = new CompareAlgorithmsDialog(this);
-            dialog.setVisible(true);
-        });
 
         loadBooksData();
         setVisible(true);
@@ -766,7 +813,7 @@ class MainSystemFrame extends JFrame {
             LibraryData data = LibraryData.getInstance();
             ImprovedSortingAlgorithm sorter = new ImprovedSortingAlgorithm();
             ArrayList<Book> sortedBooks = sorter.sortBooks(data.getBooks());
-            
+
             data.setIsSorted(true);
 
             tableModel.setRowCount(0);
@@ -927,7 +974,7 @@ class CompareAlgorithmsDialog extends JDialog {
         long baselineTotal = 0;
         long improvedTotal = 0;
         int numSearches = 20;
-        
+
         for (int i = 0; i < numSearches; i++) {
             data.markUnsorted();
             baselineSearcher.searchBooksByTitle(new ArrayList<>(books), searchTerm);
