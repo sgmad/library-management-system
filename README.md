@@ -16,14 +16,29 @@ This version does not use implement a database. All data is stored in .csv files
 
 ---
 
+## 🔧 Revisions Based on Panel Feedback
+The following changes were made as part of the panel’s recommendations during the project defense:
+
+1. **Removed Compare Algorithms Button (GUI):**  
+   The button for algorithm comparison was hidden from the main interface to satisfy the panel’s instruction to fully remove the ability to compare algorithms, though the code remains implemented internally.
+
+2. **Implemented Custom Abstract Data Type (ADT):**  
+   Introduced `CustomBookList`, a dedicated ADT to manage the library’s book collection, as per the panel's instruction to create an ADT favoring it over the previous incarnation's ArrayList.
+
+3. **Improved Binary Search Algorithm:**  
+   The improved search algorithm now uses a **hybrid binary-linear approach**, switching to a short-range linear search once the interval becomes small.  
+   This was added to satisfy the panel’s requirement for an “improved” search procedure beyond cached sorting.
+
+---
+
 ## 👥 Team Members and Roles
 | Name | Role |
 |------|------|
-| Kiera Aguiadan | File Handling / Database Designer  |
-| Franciene Candare | System Analyst |
-| Marc Garata | UI Designer |
-| Emmanuel Tuling | Documentation & Testing Lead |
-| Sam Ugmad | Algorithm Designer |
+| Kiera Aguiadan | File Handling Design  |
+| Franciene Candare | UI Designer |
+| Marc Garata | Documentation |
+| Emmanuel Tuling | Tester |
+| Sam Ugmad | Algorithm Lead |
 
 ---
 
